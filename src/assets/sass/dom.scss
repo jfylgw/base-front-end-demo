@@ -274,6 +274,11 @@ input {
   max-height: 680px;
 }
 
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .option-column {
   display: flex;
 }

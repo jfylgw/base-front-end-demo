@@ -39,13 +39,15 @@ export default {
         init() {
             if(this.IsLoading) this.autoHide();
         },
-        // 一定时间后，自动隐藏
+        // 一定时间后，自动隐藏（小于0表示不自动隐藏）
         autoHide() {
-            setTimeout(function () {
-                this.IsLoading = false;
-                // 返回事件通知上层
-                this.$emit('hideLoading');
-            }.bind(this), this.AutoHideTime);
+            if(this.AutoHideTime && this.AutoHideTime>0) {
+                setTimeout(function () {
+                    this.IsLoading = false;
+                    // 返回事件通知上层
+                    this.$emit('hideLoading');
+                }.bind(this), this.AutoHideTime);
+            }
         }
     },
     // 当该模版加载完成（Vue钩子函数）

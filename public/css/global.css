@@ -55,6 +55,12 @@ table thead {
     margin-left: 10px;
 }
 
+/*** 标记 ***/
 .badge-in-btn  .el-radio-button__inner {
     padding: 8px 20px;
+}
+
+/*** 表单 ***/
+.el-form-item__error {
+    position: relative !important;
 }
