@@ -1,0 +1,76 @@
+/**
+* @name 自定义element变量
+* @description
+* @author gongjf
+* @since 2019年7月9日 10:25:42
+*/
+
+///* 改变主题色变量 */
+//$--color-primary: teal;
+//
+///* 改变 icon 字体路径变量，必需 */
+//$--font-path: '~element-ui/lib/theme-chalk/fonts';
+//
+//@import "~element-ui/packages/theme-chalk/src/index";
+
+.el-tabs, .el-tab-pane {
+    width: 100%;
+    height: 100%;
+}
+
+.el-tabs {
+    .el-tabs__header {
+        margin: 0 !important;
+        padding-top: 4px;
+    }
+
+    .el-tabs__content {
+        width: 100%;
+        height: calc(100% - 45px);
+    }
+}
+
+.el-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.el-dialog__wrapper {
+    position: fixed !important;
+}
+
+.el-dropdown-menu {
+    a {
+        color: $color-text-black;
+    }
+}
+
+.el-timeline {
+    margin: 0 12px 0 0;
+}
+
+.el-menu-item {
+    font-size: 15px;
+}
+
+.el-table {
+    font-size: 15px;
+}
+
+.el-step {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-basis: unset !important;
+    margin-right: 10px !important;
+
+    &:after {
+        margin: 0 5px 0 15px;
+        content: ">";
+    }
+    &:last-of-type:after {
+        display: none;
+    }
+    
+}

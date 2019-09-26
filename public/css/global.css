@@ -1,0 +1,60 @@
+html, body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0;
+    overflow: hidden !important;
+}
+
+/*** 列表 ***/
+table thead {
+    color: #383838 !important;
+}
+
+.el-table .cell {
+    display: flex;
+}
+
+/*** 标签页 ***/
+.el-tabs .el-tabs__header {
+    margin: 0 !important;
+    padding-top: 4px;
+}
+
+.el-tabs .el-tabs__content {
+    width: 100%;
+    height: calc(100% - 45px);
+}
+
+.el-tabs__nav-scroll {
+    padding: 0 5px;
+}
+
+.el-transfer-panel__item {
+    display: block !important;
+}
+
+/*** 对话框 ***/
+.el-dialog__body {
+    padding: 10px 20px 20px 20px !important;
+}
+
+/*** 步骤条 ***/
+.el-step__head {
+    width: unset !important;
+}
+
+.el-step__line {
+    display: none;
+}
+
+.el-step__title {
+    font-size: 14px !important;
+}
+
+.el-step__main {
+    margin-left: 10px;
+}
+
+.badge-in-btn  .el-radio-button__inner {
+    padding: 8px 20px;
+}
