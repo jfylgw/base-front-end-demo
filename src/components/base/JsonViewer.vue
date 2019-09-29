@@ -1,8 +1,8 @@
 <template>
     <div :class="['json-view-container',theme]">
-        <div :class="['json-view', length ? 'closeable' : '']" :style="{fontSize:fontSize+'px',lineHeight:lineHeight+'px'}">
+        <div :class="['json-view', length ? 'closeable' : '']" :style="{fontSize: `${fontSize}px`, lineHeight: `${lineHeight}px`}">
             <!--icon-style-square-->
-            <span @click="toggleClose" class="angle" v-if="length && iconStyle==='square'">
+            <span @click="toggleClose" class="angle" v-if="length && iconStyle === 'square'">
                 <svg v-if="innerclosed" :fill="iconColors[0]" width="1em" height="1em" viewBox="0 0 1792 1792"
                     style="vertical-align: middle; color: rgb(42, 161, 152); height: 1em; width: 1em;"><path
                         d="M1344 800v64q0 14-9 23t-23 9h-352v352q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-352h-352q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h352v-352q0-14 9-23t23-9h64q14 0 23 9t9 23v352h352q14 0 23 9t9 23zm128 448v-832q0-66-47-113t-113-47h-832q-66 0-113 47t-47 113v832q0 66 47 113t113 47h832q66 0 113-47t47-113zm128-832v832q0 119-84.5 203.5t-203.5 84.5h-832q-119 0-203.5-84.5t-84.5-203.5v-832q0-119 84.5-203.5t203.5-84.5h832q119 0 203.5 84.5t84.5 203.5z"></path></svg>
@@ -11,7 +11,7 @@
                         d="M1344 800v64q0 14-9 23t-23 9h-832q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h832q14 0 23 9t9 23zm128 448v-832q0-66-47-113t-113-47h-832q-66 0-113 47t-47 113v832q0 66 47 113t113 47h832q66 0 113-47t47-113zm128-832v832q0 119-84.5 203.5t-203.5 84.5h-832q-119 0-203.5-84.5t-84.5-203.5v-832q0-119 84.5-203.5t203.5-84.5h832q119 0 203.5 84.5t84.5 203.5z"></path></svg>
             </span>
             <!--icon-style-circle-->
-            <span @click="toggleClose" class="angle" v-if="length&& iconStyle==='circle'">
+            <span @click="toggleClose" class="angle" v-if="length && iconStyle === 'circle'">
                 <svg v-if="!innerclosed" viewBox="0 0 24 24" :fill="iconColors[0]" preserveAspectRatio="xMidYMid meet"
                     style="vertical-align: middle; color: rgb(1, 160, 228); height: 1em; width: 1em;"><path
                         d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7"></path></svg>
@@ -20,7 +20,7 @@
                         d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z"></path></svg>
             </span>
             <!--icon-style-triangle-->
-            <span @click="toggleClose" class="angle" v-if="length&& iconStyle==='triangle'">
+            <span @click="toggleClose" class="angle" v-if="length && iconStyle === 'triangle'">
                 <svg v-if="!innerclosed" viewBox="0 0 15 15" :fill="iconColors[0]"
                     style="vertical-align: top; color: #3c4047; height: 1em; width: 1em; padding-left: 2px;"><path
                         d="M0 5l6 6 6-6z"></path></svg>
@@ -29,34 +29,41 @@
                         d="M0 14l6-6-6-6z"></path></svg>
             </span>
             <div class="content-wrap">
-                <p :class="['first-line',length>0?'pointer':'']" @click="toggleClose">
+                <!-- begin -->
+                <p :class="['first-line', length>0 ? 'pointer' : '']" @click="toggleClose">
                     <span v-if="jsonKey" class="json-key">"{{jsonKey}}": </span>
-                    <span v-if="length">{{prefix}}{{innerclosed ? ('...' + subfix) : ''}}
-                        <span class="json-note">{{innerclosed ? (length+' items') : ''}}</span>
+                    <span v-if="length">{{prefix}}{{innerclosed ? `...${subfix}` : ''}}
+                        <!-- json collapsed -->
+                        <span class="json-note">{{innerclosed ? `&nbsp;${length} items` : ''}}</span>
                     </span>
+                    <!-- json empty -->
                     <span v-if="!length">{{isArray ? '[],' : '{},'}}</span>
                 </p>
+                <!-- main -->
                 <div v-if="!innerclosed && length" class="json-body">
                     <template v-for="(item, index) in items">
-                        <json-view :closed="isClose(templateDeep+1)"
-                                    v-if="item.isJSON"
-                                    :key="index"
-                                    :data="item.value"
-                                    :jsonKey="item.key"
-                                    :currentDeep="templateDeep+1"
-                                    :deep="deep"
-                                    :iconStyle="iconStyle"
-                                    :theme="theme"
-                                    :fontSize="fontSize"
-                                    :lineHeight="lineHeight"
-                                    :iconColor="iconColors"
-                                    :isLast="index === items.length - 1">
-                        </json-view>
+                        <!-- json -->
+                        <json-viewer v-if="item.isJSON"
+                            :key="index"
+                            :data="item.value"
+                            :jsonKey="item.key"
+                            :isLast="index === items.length - 1"
+                            :closed="isClose(templateDeep + 1)"
+                            :currentDeep="templateDeep + 1"
+                            :deep="deep"
+                            :iconStyle="iconStyle"
+                            :theme="theme"
+                            :fontSize="fontSize"
+                            :lineHeight="lineHeight"
+                            :iconColor="iconColors"
+                        ></json-viewer>
+                        <!-- value -->
                         <p class="json-item" v-else :key="index">
                             <span class="json-key">
-                                {{(isArray ? '' : '"' + item.key + '":')}}
+                                <!-- {{`"${item.key}":`}} -->
+                                {{isArray ? '' : `"${item.key}":`}}
                             </span>
-                            <span :class="['json-value',getDataType(item.value)]">
+                            <span :class="['json-value', getDataType(item.value)]">
                                 {{
                                     `${typeof item.value === 'string' ? '"' : ''}${item.value}${typeof item.value === 'string' ? '"' : ''}
                                     ${index === items.length-1 ? '' : ','}`
@@ -66,6 +73,7 @@
                     </template>
                     <span v-if="!innerclosed" class="base-line"></span>
                 </div>
+                <!-- end -->
                 <p v-if="!innerclosed " class="last-line">
                     <span>{{subfix}}</span>
                 </p>
@@ -104,7 +112,7 @@ export default {
         },
         deep: { // 展开深度
             type: Number,
-            default: 3
+            default: 5
         },
         currentDeep: { // 当前为递归的第几层
             type: Number,
@@ -152,21 +160,22 @@ export default {
         items() {
             const json = this.data;
             if (this.isArray) {
-                return json.map(item => {
-                    const isJSON = this.isObjectOrArray(item);
+                return json.map((item, index) => {
                     return {
                         value: item,
-                        isJSON,
+                        dataType: this.getDataType(item),
+                        isJSON: this.isObjectOrArray(item),
+                        // key: `${index}`
                         key: ''
                     };
                 });
             }
             return Object.keys(json).map(key => {
                 const item = json[key];
-                const isJSON = this.isObjectOrArray(item);
                 return {
                     value: item,
-                    isJSON,
+                    dataType: this.getDataType(item),
+                    isJSON: this.isObjectOrArray(item),
                     key
                 };
             });
@@ -186,16 +195,21 @@ export default {
             }
         }
     },
-    mounted() {
-        this.innerclosed = this.closed;
-        this.templateDeep = this.currentDeep;
-    },
+    watch: {
+        closed(){
+            this.innerclosed = this.closed;
+        }
+    }, 
     methods: {
+        init() {
+            this.innerclosed = this.closed;
+            this.templateDeep = this.currentDeep;
+        },
         getDataType(data) {
             return Object.prototype.toString.call(data).slice(8, -1).toLowerCase();
         },
         isObjectOrArray(source) {
-            return ['array','object'].includes(this.getDataType(source));
+            return ['array', 'object'].includes(this.getDataType(source));
         },
         toggleClose() {
             if (this.length === 0) {
@@ -214,10 +228,8 @@ export default {
             return [{}, []].map(item => JSON.stringify(item)).includes(JSON.stringify(data));
         }
     },
-    watch: {
-        closed(){
-            this.innerclosed = this.closed;
-        }
+    mounted() {
+        this.init();
     }
 };
 
