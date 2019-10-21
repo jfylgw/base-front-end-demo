@@ -92,7 +92,7 @@ input {
   }
 }
 
-.btn-green {
+.btn-theme {
   background-color: $color-theme;
   color: $color-text-white;
   &:hover {
@@ -100,6 +100,20 @@ input {
   }
   &:active {
     background-color: $color-theme-active;
+  }
+  & .clicked {
+
+  }
+}
+
+.btn-opacity {
+  background-color: $color-opacity;
+  color: $color-text-dark;
+  &:hover {
+    background-color: $color-opacity-hover;
+  }
+  &:active {
+    background-color: $color-opacity-active;
   }
   & .clicked {
 
@@ -175,6 +189,7 @@ input {
   width: 100%;
   height: 100%;
   background-color: white;
+  overflow-y: auto;
 }
 
 .head-area, .body-area, .foot-area {
@@ -232,15 +247,15 @@ input {
     background-color: white;
     box-shadow: 0 5px 5px 0 #f1f1f1;
 
+    .area-unit {
+      margin-right: 10px;
+    }
+
     .left-area {
       display: flex;
       justify-content: flex-start;
       align-items: flex-end;
       padding: 0 10px;
-
-      .area-unit {
-        margin-right: 10px;
-      }
     }
 
     .right-area {
@@ -250,6 +265,7 @@ input {
       padding: 0 10px;
       
       .area-unit {
+        margin-right: 0px;
         margin-left: 10px;
       }
     }

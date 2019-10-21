@@ -48,7 +48,7 @@
                     <input type="password" class="input-text" placeholder="密码" v-model="user.password"/>
                 </div>
                 <div class="btns-area">
-                    <a class="btn btn-green btn-submit" @click="signIn">
+                    <a class="btn btn-theme btn-submit" @click="signIn">
                         <span class="">登录</span>
                     </a>
                 </div>
