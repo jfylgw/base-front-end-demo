@@ -28,7 +28,7 @@
             
             <!-- 菜单区 -->
             <el-menu class="menu-area" v-if="menus && menus.length > 0" 
-                router default-active="$route.path" :default-openeds="show.menuOpen" 
+                router :default-active="$route.path" :default-openeds="show.menuOpen" 
                 @select="selectMenuItem">
                 <el-menu-item index="/rear/user">
                     <span>用户列表</span>
@@ -94,6 +94,9 @@ export default {
             for(let i=0, iLen=this.menus.length; i<iLen; i++) {
                 this.show.menuOpen.push(i);
             }
+
+            // 指定默认路由
+            if(this.$route.path === '/rear') this.$router.push({ name: 'summary' });
         },
         // 选中菜单项
         selectMenuItem(index, path, item) {

@@ -10,6 +10,10 @@ table thead {
     color: #383838 !important;
 }
 
+.el-table th>.cell {
+    display: flex !important;
+}
+
 .el-table .cell {
     display: flex;
 }
@@ -63,4 +67,32 @@ table thead {
 /*** 表单 ***/
 .el-form-item__error {
     position: relative !important;
+}
+
+/*** 上传 ***/
+.el-upload {
+    width: 100%;
+}
+
+.el-upload-dragger {
+    width: 100% !important;
+}
+
+.el-upload-list, .el-upload-list--picture-card {
+    max-height: 500px;
+    overflow-y: auto;
+    margin: 10px 0 !important;
+}
+
+.el-upload--picture-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*** 导航菜单 ***/
+.el-submenu__title {
+    height: 50px !important;
+    line-height: 50px !important;
+    font-size: 16px !important;
 }

@@ -53,6 +53,7 @@ input {
   align-items: center;
 }
 
+/////////////////////////// 按钮
 .btn {
   display: block;
   padding: 12px 16px;
@@ -92,6 +93,10 @@ input {
   }
 }
 
+.btn-white-clicked {
+  background-color: $color-white-active;
+}
+
 .btn-theme {
   background-color: $color-theme;
   color: $color-text-white;
@@ -104,6 +109,10 @@ input {
   & .clicked {
 
   }
+}
+
+.btn-theme-clicked {
+  background-color: $color-theme-active;
 }
 
 .btn-opacity {
@@ -120,6 +129,11 @@ input {
   }
 }
 
+.btn-opacity-clicked {
+  background-color: $color-opacity-active;
+}
+
+/////////////////////////// 链接
 .links-area {
   display: flex;
   flex-wrap: wrap;
@@ -201,7 +215,7 @@ input {
   // z-index: 3;
 }
 
-.body-area {
+.body-area, .dialog-context {
   // z-index: 2;
 
   .form {
@@ -300,7 +314,7 @@ input {
 }
 
 .column-option {
-  margin-right: 10px;
+  margin-right: 14px;
   &:last-of-type {
     margin-right: 0;
   }
@@ -310,9 +324,37 @@ input {
   }
 }
 
+.navmenu-area {
+  position: absolute;
+  display: flex;
+  top: 0;
+  left: 300px;
+  height: 100%;
+
+  .btn {
+      border-radius: 0;
+      color: $color-white;
+  }
+}
+
 #particles-js {
   display: block;
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.summary {
+  display: flex; 
+  align-items: flex-end;
+
+  .summary-label {
+      color: $color-text-dark; 
+      font-size: 16px;
+  }
+
+  .summary-num {
+      color: $color-theme; 
+      font-size: 22px;
+  }
 }
