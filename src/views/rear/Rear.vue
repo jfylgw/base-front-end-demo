@@ -20,39 +20,48 @@
         </el-header>
 
         <!-- 主体 -->
-        <el-main class="body-area">
-            <!-- 无权限提示区 -->
-            <div class="nothing-area" v-if="!menus || menus.length === 0">
-                <span class="warning-text">暂无任何权限，请和管理员联系</span>
-            </div>
-            
-            <!-- 菜单区 -->
-            <el-menu class="menu-area" v-if="menus && menus.length > 0" 
-                router :default-active="$route.path" :default-openeds="show.menuOpen" 
-                @select="selectMenuItem">
-                <el-menu-item index="/rear/user">
-                    <span>用户列表</span>
-                </el-menu-item>
-                <el-submenu v-for="(menuGroup, i) in menus" :key="menuGroup.name" :index="i">
-                    <template slot="title">
-                        <span v-html="menuGroup.name"></span>
-                    </template>
-                    <el-menu-item v-for="menu in menuGroup.menus" :key="menu.name" :index="menu.url">
-                        <span v-html="menu.name"></span>
+        <el-container class="body-area">
+            <el-aside class="aside-area">
+                <!-- 无权限提示区 -->
+                <div class="nothing-area" v-if="!menus || menus.length === 0">
+                    <span class="warning-text">暂无任何权限，请和管理员联系</span>
+                </div>
+                
+                <!-- 菜单区 -->
+                <el-menu class="menu-area" :collapse="show.isCollapse" v-if="menus && menus.length > 0" 
+                    router :default-active="$route.path" :default-openeds="show.menuOpen" 
+                    @select="selectMenuItem">
+                    <el-menu-item index="/rear/user">
+                        <span slot="title">用户列表</span>
                     </el-menu-item>
-                </el-submenu>
-            </el-menu>
+                    <el-submenu v-for="(menuGroup, i) in menus" :key="menuGroup.name" :index="i">
+                        <span slot="title" v-html="menuGroup.name"></span>
+                        <el-menu-item v-for="menu in menuGroup.menus" :key="menu.name" :index="menu.url">
+                            <span slot="title" v-html="menu.name"></span>
+                        </el-menu-item>
+                    </el-submenu>
+                </el-menu>
+                
+                <!-- 底部展开按钮 -->
+                <el-menu class="bottom-menu-area" active-text-color="#303133" :collapse="show.isCollapse">
+                    <el-menu-item index="collapse" @click="show.isCollapse = !show.isCollapse">
+                        <i :class="show.isCollapse ? 'el-icon-arrow-right' : 'el-icon-arrow-left'"/>
+                        <span slot="title" v-html="show.isCollapse ? '展开' : '收起'"></span>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
 
-            <!-- 子页面区 -->
-            <div class="frame-area" v-if="menus && menus.length > 0">
+            <el-main class="frame-area">
+                <!-- 子页面 -->
                 <keep-alive>
                     <router-view name="rear"></router-view>
                 </keep-alive>
-            </div>
-        </el-main>
+            </el-main>
+        </el-container>
 
         <!-- 页脚部 -->
         <!-- <el-footer class="foot-area"></el-footer> -->
+
     </el-container>
 </template>
 
@@ -115,6 +124,18 @@ i {
     display: inline-flex;
 }
 
+.el-aside {
+    width: unset !important;
+}
+
+.el-menu-item {
+    min-width: 180px;
+}
+
+.el-menu--collapse>.el-menu-item {
+    min-width: unset;
+}
+
 .rear-context {
     .head-area {
         display: flex;
@@ -170,22 +191,36 @@ i {
                 color: red;
             } 
         }
+        
+        .aside-area {
+            position: relative;
+            overflow: hidden;
 
-        .menu-area {
-            width: 11%;
-            height: 100%;
-            background-color: $color-white;
+            .menu-area {
+                height: 100%;
+                background-color: $color-white;
 
-            span {
-                display: inline-flex;
+                span {
+                    display: inline-flex;
+                }
+            }
+
+            .bottom-menu-area {
+                position: absolute;
+                bottom: 0;
+                
+                span {
+                    display: inline-flex;
+                }
             }
         }
-
+        
         .frame-area {
-            width: 89%;
             float: right;
-            background-color: white
+            background-color: white;
+            padding: 0;
         }
+
     }
 
     .foot-area {
