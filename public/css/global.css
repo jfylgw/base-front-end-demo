@@ -16,6 +16,8 @@ table thead {
 
 .el-table .cell {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /*** 标签页 ***/
@@ -67,6 +69,11 @@ table thead {
 /*** 表单 ***/
 .el-form-item__error {
     position: relative !important;
+}
+
+.el-form-item__content {
+    line-height: unset !important;
+    font-size: unset !important;
 }
 
 /*** 上传 ***/

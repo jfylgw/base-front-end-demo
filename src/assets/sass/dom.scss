@@ -286,7 +286,8 @@ input {
   }
 
   .list-body-area {
-    height: calc(100% - 54px);
+    max-height: calc(100% - 54px);
+    overflow-y: auto;
     background-color: white;
   }
 }
