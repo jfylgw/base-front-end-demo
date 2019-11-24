@@ -15,6 +15,7 @@ const common = {
     copyright: 'Copyright © 2019 XAG Co.,Ltd. All Rights Reserved', // 版权说明
     signInRoute: "sign-in", // 登录页路由
     theme: Storage.getSessionStore("theme") || "", // 主题名称
+    showSignInDialog: true, // 是否展示全局登录弹窗
     screenLock: false, // 是否锁屏
     routerTabs: [], // 路由标签页
     componentTabs: [], // 组件标签页
@@ -25,6 +26,7 @@ const common = {
     GET_PLATFORM_NAME: state => state.platformName,
     GET_COPYRIGHT: state => state.copyright,
     GET_SIGNIN_ROUTE: state => state.signInRoute,
+    GET_SHOW_SIGNIN_DIALOG: state => state.showSignInDialog,
     GET_THEME: state => state.theme,
     GET_SCREEN_LOCK: state => state.screenLock,
     GET_ROUTER_TABS: state => state.routerTabs,
@@ -33,6 +35,9 @@ const common = {
   },
   // 对state的同步操作，相当于setters
   mutations: {
+    SET_SHOW_SIGNIN_DIALOG: (state, isShow) => {
+      state.showSignInDialog = isShow;
+    },
     SET_THEME: (state, color) => {
       state.theme = color;
       Storage.setSessionStore({
@@ -75,6 +80,12 @@ const common = {
   },
   // 对state的异步操作
   actions: {
+    SHOW_SIGNIN_DIALOG: (context) => {
+      context.commit("SET_SHOW_SIGNIN_DIALOG", true);
+    },
+    HIDE_SIGNIN_DIALOG: (context) => {
+      context.commit("SET_SHOW_SIGNIN_DIALOG", false);
+    },
     ROUTER_TO_SIGNIN: ({ state }) => {
       Router.push({
         name: state.signInRoute

@@ -10,12 +10,19 @@
         <!-- 顶部 -->
         <el-header class="head-area">
             <router-link to="/rear" class="logo-area">
+                <i class="logo el-icon-coin"/>
                 <span class="logo-title" v-html="GET_PLATFORM_NAME()"></span>
             </router-link>
             <div class="user-info-area">
-                <span id="userName" v-bind="user.name"></span>
-                <router-link to="/change-pass">修改密码</router-link>
-                <router-link to="/sign-in">登出</router-link>
+                <div class="area-unit" style="margin-right: 10px;">
+                    <span style="line-height: 26px;" v-html="currentUser.name || currentUser.username"></span>
+                </div>
+                <router-link class="btn btn-opacity" title="修改密码" to="/change-pass">
+                    <i class="iconfont xia-logout"></i>
+                </router-link>
+                <router-link class="btn btn-opacity" title="登出" to="/sign-in">
+                    <i class="iconfont xia-logout"></i>
+                </router-link>
             </div>
         </el-header>
 
@@ -62,11 +69,39 @@
         <!-- 页脚部 -->
         <!-- <el-footer class="foot-area"></el-footer> -->
 
+        <!-- 登录弹窗 -->
+        <el-dialog width="20%" top="4vh" destroy-on-close 
+            :close-on-click-modal="false"
+            title="重新登录" :visible.sync="$store.state.common.showSignInDialog">
+            <div class="dialog-context">
+                <!-- 加载动画 -->
+                <loading :IsLoading="show.isLoading" :AutoHideTime="0" Msg=""></loading>
+
+                <el-form ref="signInDialogForm" label-width="85px" :model="dialog.form" :rules="dialog.rules" @keyup.enter="signIn">
+                    <el-form-item label="名称" prop="username">
+                        <el-input v-model="dialog.form.username" placeholder="请输入名称" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="password">
+                        <el-input v-model="dialog.form.password" placeholder="请输入密码" clearable></el-input>
+                    </el-form-item>
+                </el-form>
+
+                <!-- 底部按钮 -->
+                <div class="dialog-footer">
+                    <!-- <el-button @click="ROUTER_TO_SIGNIN()">返回登录页</el-button> -->
+                    <el-button type="primary" @click="signIn">登 录</el-button>
+                </div>
+            </div>
+        </el-dialog>
+
     </el-container>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Loading from "components/base/Loading";
+import Status from "api/status";
+import * as AuthorityApi from "api/authority";
 
 export default {
     name: 'Rear',
@@ -77,10 +112,26 @@ export default {
         return {
             msg: '',
             show: {
+                isLoading: false,
+                dialog: {
+                    userInfo: false
+                },
                 isCollapse: false,
                 menuOpen: []
             },
-            user: {},
+            dialog: {
+                title: '',
+                form: {},
+                rules: {
+                    username: [
+                        { required: true, message: '请输入帐号', trigger: 'blur' },
+                    ],
+                    password: [
+                        { required: true, message: '请输入密码', trigger: 'blur' }
+                    ],
+                }
+            },
+            entity: {},
             menus: []
         };
     },
@@ -88,7 +139,7 @@ export default {
     methods: {
         // 引入Vuex的方法
         ...mapGetters(['GET_USER_INFO', 'GET_PLATFORM_NAME']),
-        ...mapActions(['ROUTER_TO_SIGNIN']),
+        ...mapActions(['USER_IN', 'USER_OUT', 'HIDE_SIGNIN_DIALOG', 'ROUTER_TO_SIGNIN']),
         init() {
             // 获取用户信息，获取不到就返回登录
             this.user = this.GET_USER_INFO();
@@ -96,7 +147,6 @@ export default {
                 this.ROUTER_TO_SIGNIN();
                 return;
             } 
-            this.$el.querySelector('#userName').innerText = this.user.name;
 
             // 展开所有菜单
             this.menus = this.user.module;
@@ -110,6 +160,57 @@ export default {
         // 选中菜单项
         selectMenuItem(index, path, item) {
             
+        },
+        showLoading() {
+            this.show.isLoading = true;
+        },
+        hideLoading() {
+            this.show.isLoading = false;
+        },
+        // 校验（名称在表单的ref属性上配置）
+        validate(formRefName) {
+            let ok = true;
+            if(!formRefName) return ok;
+            this.$refs[formRefName].validate(valid => {
+                ok = valid;
+            });
+            return ok;
+        },
+        // 重置指定名称的表单（名称在表单的ref属性上配置）
+        resetForm(formRefName) {
+            this.$refs[formRefName].resetFields();
+        },
+        async signIn() {
+            try {
+                // 显示加载动画
+                this.showLoading();
+                // 校验表单
+                if(!this.validate('signInDialogForm')) {
+                    // 隐藏加载动画
+                    this.hideLoading();
+                    return;
+                }
+                // 请求接口
+                let response = await AuthorityApi.signIn(this.dialog.form);
+                let data = response.data;
+                if(response.status === Status.HTTP_STATUS.OK) {
+                    // 隐藏加载动画
+                    this.hideLoading();
+                    // 保存用户信息
+                    this.USER_IN(data || this.user);
+                    // 隐藏登录弹窗
+                    this.HIDE_SIGNIN_DIALOG();
+                }
+            } catch(err) {
+                // 隐藏加载动画
+                this.hideLoading();
+                this.$message({ type: 'error', showClose: true, message: '登录失败' });
+            }
+        }
+    },
+    computed: {
+        currentUser(){
+            return this.$store.state.user.userInfo;
         }
     },
     // 当该模版加载完成（Vue钩子函数）

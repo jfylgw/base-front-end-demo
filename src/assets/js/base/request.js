@@ -157,10 +157,10 @@ function dataFilter(promise, dataType) {
   if (promise && promise.status && promise.status<0) {
     // 未登陆，直接跳转到登录页，不需要提示
     if(promise.status === -1) {
-        // 清空页面登录信息
-        Store.dispatch('USER_OUT');
-        // 跳转到登录页
-        Store.dispatch("ROUTER_TO_SIGNIN");
+        // // 跳转到登录页
+        // Store.dispatch("ROUTER_TO_SIGNIN");
+        // 展示全局登录弹窗
+        Store.dispatch("SHOW_SIGNIN_DIALOG");
         return null;
     }
 
