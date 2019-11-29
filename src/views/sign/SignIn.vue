@@ -128,15 +128,18 @@ export default {
                 }
                 // 请求接口
                 let response = await AuthorityApi.signIn(this.user);
-                let data = response.data;
-                if(response.status === Status.SERVER_STATUS.OK) {
-                    // 隐藏加载动画
-                    this.hideLoading();
-                    // 存到全局变量中
-                    this.USER_IN(data || this.user);
-                    // 跳转到主页（参数键值要跟子组件的props中的键值一致）
-                    this.$router.push({ name: "rear" });
+                if(response) {
+                    let data = response.data;
+                    if(response.status === Status.SERVER_STATUS.OK) {
+                        // 隐藏加载动画
+                        this.hideLoading();
+                        // 存到全局变量中
+                        this.USER_IN(data || this.user);
+                        // 跳转到主页（参数键值要跟子组件的props中的键值一致）
+                        this.$router.push({ name: "rear" });
+                    }
                 }
+                
             } catch(err) {
                 // 隐藏加载动画
                 this.hideLoading();

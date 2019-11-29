@@ -116,14 +116,16 @@ export default {
                 }
                 // 请求接口
                 let response = await AuthorityApi.signIn(this.dialog.form);
-                let data = response.data;
-                if(response.status === Status.HTTP_STATUS.OK) {
-                    // 隐藏加载动画
-                    this.hideLoading();
-                    // 保存用户信息
-                    this.USER_IN(data || this.user);
-                    // 隐藏登录弹窗
-                    this.HIDE_SIGNIN_DIALOG();
+                if(response) {
+                    let data = response.data;
+                    if(response.status === Status.HTTP_STATUS.OK) {
+                        // 隐藏加载动画
+                        this.hideLoading();
+                        // 保存用户信息
+                        this.USER_IN(data || this.user);
+                        // 隐藏登录弹窗
+                        this.HIDE_SIGNIN_DIALOG();
+                    }
                 }
             } catch(err) {
                 // 隐藏加载动画

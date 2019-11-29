@@ -46,6 +46,25 @@
                 @size-change="sizeChange" @current-change="pageChange">
             </el-pagination>
         </div>
+        
+        <!-- 用户信息弹窗 -->
+        <el-dialog top="5vh" width="30%" 
+            :title="dialog.title" :visible.sync="show.dialog.detail">
+            <div class="dialog-context" v-if="show.dialog.detail">
+                <el-form :model="dialog.form" ref="userInfoDialogForm" label-width="85px">
+                    <el-form-item label="ClientId" prop="clientId">
+                        <el-input v-model="dialog.form.clientId" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="Secret" prop="secret">
+                        <el-input v-model="dialog.form.secret" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="Telephone" prop="telephone">
+                        <el-input v-model="dialog.form.telephone" readonly></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-dialog>
+        
     </div>
 </template>
 
@@ -64,7 +83,10 @@ export default {
     data() {
         return {
             show: {
-                isLoading: false
+                isLoading: false,
+                dialog: {
+                    detail: false
+                }
             },
             user: {},
             tableData: [],
@@ -101,12 +123,14 @@ export default {
                 }
                 // 请求接口
                 let response = await UserApi.page(Object.assign(this.user, this.pagination));
-                let data = response.data;
-                if(response.status === Status.SERVER_STATUS.OK) {
-                    // 隐藏加载动画
-                    this.hideLoading();
-                    // 处理内容，展示分页列表
-                    this.tableData = data.result;
+                if(response) {
+                    let data = response.data;
+                    if(response.status === Status.SERVER_STATUS.OK) {
+                        // 隐藏加载动画
+                        this.hideLoading();
+                        // 处理内容，展示分页列表
+                        this.tableData = data.result;
+                    }
                 }
             } catch(err) {
                 // 隐藏加载动画
@@ -160,6 +184,35 @@ export default {
                 //     this.$message({ type: "success", showClose: true, message: "删除成功" });
                 // }
             }).catch(_ => {});
+        },
+        async download(index, row) {
+            try {
+                // 显示加载动画
+                this.showLoading();
+                // 请求接口
+                let response = await DataSetApi.download(row);
+                if(response) {
+                    let contentDisposition = response.headers['content-disposition'];
+                    let blob = new Blob([response.data], {type: response.headers['content-type']});
+
+                    if(contentDisposition && blob) {
+                        let filename = contentDisposition.split('filename=')[1];
+                        let url = URL.createObjectURL(blob);
+                        let a = document.createElement('a');
+                        a.download = decodeURI(filename);
+                        a.href = url;
+                        a.click();
+                    } else {
+                        this.$message({ type: 'error', showClose: true, message: '导出失败，请重试或者联系管理员' });
+                    }
+                }
+                // 隐藏加载动画
+                this.hideLoading();
+            } catch(err) {
+                this.$message({ type: 'error', showClose: true, message: err.message || '操作失败' });
+                // 隐藏加载动画
+                this.hideLoading();
+            }
         }
     },
     // 当该模版加载完成（Vue钩子函数）

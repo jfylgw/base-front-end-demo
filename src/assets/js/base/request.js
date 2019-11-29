@@ -10,7 +10,6 @@ import Jsonp from "jsonp";
 import Qs from 'qs';
 import Store from "store/index";
 import { Message } from "element-ui";
-import { serialize } from "assets/js/base/util";
 // import Status from "api/status";
 // import { authApis } from "api/url";
 
@@ -57,11 +56,6 @@ Axios.defaults.validateStatus = status => {
  */
 Axios.interceptors.request.use(
   config => {
-    // 参数序列化
-    if (config.headers.serialize) {
-      config.data = serialize(config.data);
-      delete config.data.serialize;
-    }
     return config;
   },
   error => {
@@ -74,7 +68,7 @@ Axios.interceptors.request.use(
  */
 Axios.interceptors.response.use(
   data => {
-    return data.data || {};
+    return data;
   },
   error => {
     return Promise.reject(error);
@@ -191,7 +185,7 @@ const request = {
     let promise = null;
     try {
       headers = setRequestHeader(headers);
-      promise = dataFilter(await Axios.get(appendUrlParam(url, data), data, {headers}), headers['Data-Type']);
+      promise = dataFilter(await Axios.get(appendUrlParam(url, data), {headers}), headers['Data-Type']);
     } catch (e) {
       return e;
     }
