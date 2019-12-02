@@ -27,18 +27,17 @@ const jsonpOption = {
 };
 
 // 默认请求数据类型
-const defaultContentType = `application/json;charset=${encode}`; // 适用于Restful API
+const defaultContentType = `application/json;charset=${encode}`;
 // const defaultContentType = `application/x-www-form-urlencoded;charset=${encode}`;
 // const defaultContentType = `multipart/form-data;charset=${encode}`;
-
 // 默认响应数据类型
-const defaultDataType = 'json';
-// const defaultDataType = 'text';
+// const defaultDataType = 'json';
+const defaultDataType = 'text';
 
 /**
  * axios 配置
  */
-// 默认上下文类型
+// 上下文类型为Json，用于Rest API
 // Axios.defaults.headers['Content-Type'] = defaultContentType;
 // 30秒后超时
 Axios.defaults.timeout = 30000;
@@ -52,10 +51,36 @@ Axios.defaults.validateStatus = status => {
 /***************************************     拦截     *************************************/
 
 /**
- * 请求拦截
+ * 请求拦截器
  */
 Axios.interceptors.request.use(
   config => {
+    // 处理请求头
+    config.headers = Object.assign({
+      'Content-Type': defaultContentType,
+      dataType: defaultDataType
+    }, config.headers);
+
+    let { responseType } = config.headers;
+    if(responseType) config.responseType = responseType;
+
+    // 处理请求数据
+    let params = config.data || {};
+    let contentType = config.headers['Content-Type'];
+    if(contentType.indexOf('json')>-1) {
+      config.data = JSON.stringify(params)
+    } 
+    else if(contentType.indexOf('urlencoded')>-1) {
+      config.data = Qs.stringify(params);
+    } 
+    else if(contentType.indexOf('form-data')>-1) {
+      let formData = new FormData();
+      for(let key in params) {
+        formData.append(key, params[key]);
+      }
+      config.data = formData;
+    }
+
     return config;
   },
   error => {
@@ -64,16 +89,53 @@ Axios.interceptors.request.use(
 );
 
 /**
- * 响应拦截
+ * 响应拦截器
  */
 Axios.interceptors.response.use(
   data => {
+    let result = null;
+    let serverStatus = data.data.status || 200
+    let serverMsg = data.data.message || '';
+    
+    // 处理响应状态
+    if (serverStatus < 0) {
+      // 未登陆，直接跳转到登录页，不需要提示
+      if(serverStatus === -1) {
+          // // 跳转到登录页
+          // Store.dispatch("ROUTER_TO_SIGNIN");
+          // 展示登录弹窗
+          Store.dispatch("SHOW_SIGNIN_DIALOG");
+      }
+      // // "无使用权限"
+      // else if(serverStatus === -2) {}
+      // // "您无对于该范围数据的操作权限"
+      // else if(serverStatus === -6) {}
+      // // "token无效"
+      // else if(serverStatus === -1004) {}
+
+      // 打印错误信息
+      Message({ type: "error", showClose: true, message: serverMsg });
+
+      return result;
+    }
+
+    // 处理响应数据
+    // let { dataType, responseType } = data.config.headers;
+    if(typeof data.data === 'string') {
+      data.data = JSON.parse(data.data);
+    }
+    if(data.data.data && typeof data.data.data === 'string') {
+      data.data.data = JSON.parse(result.data);
+    }
+
     return data;
   },
   error => {
     return Promise.reject(error);
   }
 );
+
+/***************************************     方法     *************************************/
 
 /**
  * 为url追加参数
@@ -96,141 +158,51 @@ function appendUrlParam(url, data) {
 }
 
 /**
- * 设置默认请求头
- * @param headers
- */
-function setRequestHeader(headers) {
-  headers = headers || {};
-  // 请求类型
-  let contentType = headers['Content-Type'] || defaultContentType;
-  headers['Content-Type'] = contentType;
-  // 响应类型
-  let dataType = headers['Data-Type'] || defaultDataType;
-  headers['Data-Type'] = dataType;
-  return headers;
-}
-
-/**
- * 对请求数据进行处理
- * @param headers
- * @param data
- */
-function paramFilter(headers, data) {
-  // 请求类型
-  let contentType = headers['Content-Type'] || defaultContentType;
-  let content = data;
-  if(contentType.indexOf('json')>-1) {
-    content = JSON.stringify(data)
-  } else if(contentType.indexOf('urlencoded')>-1) {
-    content = Qs.stringify(data);
-  } else if(contentType.indexOf('form-data')>-1) {
-    content = new FormData();
-    for(let key in data) {
-      data.append(key, data[key]);
-    }
-  }
-  return content;
-}
-
-/**
- * 对响应数据进行处理
- * @param promise
- * @param dataType
- */
-function dataFilter(promise, dataType) {
-  dataType = dataType || defaultDataType;
-  if (promise) {
-    if(typeof promise === 'string') {
-      promise = JSON.parse(promise);
-    }
-    if(promise.data && dataType === 'json') {
-      promise.data = JSON.parse(promise.data);
-    }
-  }
-
-  if (promise && promise.status && promise.status<0) {
-    // 未登陆，直接跳转到登录页，不需要提示
-    if(promise.status === -1) {
-        // // 跳转到登录页
-        // Store.dispatch("ROUTER_TO_SIGNIN");
-        // 展示全局登录弹窗
-        Store.dispatch("SHOW_SIGNIN_DIALOG");
-        return null;
-    }
-
-    Message({ type: "error", showClose: true, message: promise.message });
-    // "无使用权限"
-    if(promise.status === -2) {
-        return null;
-    }
-    // "您无对于该范围数据的操作权限"
-    else if(promise.status === -6) {
-        return null;
-    }
-    // "token无效"
-    else if(promise.status === -1004) {
-        return null;
-    }
-  }
-  return promise;
-}
-
-/***************************************     提供外部方法     *************************************/
-
-/**
  * 异步请求对象
  */
 const request = {
-  get: async (url, data, headers) => {
+  get: async (url, data, options) => {
     let promise = null;
     try {
-      headers = setRequestHeader(headers);
-      promise = dataFilter(await Axios.get(appendUrlParam(url, data), {headers}), headers['Data-Type']);
+      promise = await Axios.get(appendUrlParam(url, data), { headers: options });
     } catch (e) {
       return e;
     }
     return promise;
   },
-  post: async (url, data, headers) => {
+  post: async (url, data, options) => {
     let promise = null;
     try {
-      headers = setRequestHeader(headers);
-      promise = dataFilter(await Axios.post(url, paramFilter(headers, data), {headers}), headers['Data-Type']);
+      promise = await Axios.post(url, data, { headers: options });
     } catch (e) {
       return e;
     }
     return promise;
   },
-  put: async (url, data, headers) => {
+  put: async (url, data, options) => {
     let promise = null;
     try {
-      headers = setRequestHeader(headers);
-      promise = dataFilter(await Axios.put(url, paramFilter(headers, data), {headers}), headers['Data-Type']);
+      promise = await Axios.put(url, data, { headers: options });
     } catch (e) {
       return e;
     }
     return promise;
   },
-  delete: async (url, data, headers) => {
+  delete: async (url, data, options) => {
     let promise = null;
     try {
-      headers = setRequestHeader(headers);
-      promise = dataFilter(await Axios.delete(url, paramFilter(headers, data), {headers}), headers['Data-Type']);
+      promise = await Axios.delete(url, data, { headers: options });
     } catch (e) {
       return e;
     }
     return promise;
   },
-  jsonp: async (url, data, dataType) => {
+  jsonp: async (url, data, options) => {
     let promise = null;
-    url = appendUrlParam(url, data);
     try {
       promise = await new Promise(resolve => {
-        Jsonp(url, jsonpOption, (err, res) => {
-          resolve(res);
-        });
+        Jsonp(appendUrlParam(url, data), jsonpOption, (err, res) => { resolve(res); });
       });
-      promise = dataFilter(promise, dataType);
     } catch (e) {
       return e;
     }
