@@ -10,8 +10,6 @@ import Jsonp from "jsonp";
 import Qs from 'qs';
 import Store from "store/index";
 import { Message } from "element-ui";
-// import Status from "api/status";
-// import { authApis } from "api/url";
 
 /***************************************     配置     *************************************/
 
@@ -31,14 +29,12 @@ const defaultContentType = `application/json;charset=${encode}`;
 // const defaultContentType = `application/x-www-form-urlencoded;charset=${encode}`;
 // const defaultContentType = `multipart/form-data;charset=${encode}`;
 // 默认响应数据类型
-// const defaultDataType = 'json';
-const defaultDataType = 'text';
+const defaultDataType = 'json';
+// const defaultDataType = 'text';
 
 /**
  * axios 配置
  */
-// 上下文类型为Json，用于Rest API
-// Axios.defaults.headers['Content-Type'] = defaultContentType;
 // 30秒后超时
 Axios.defaults.timeout = 30000;
 // 跨域请求，允许保存cookie
@@ -60,9 +56,6 @@ Axios.interceptors.request.use(
       'Content-Type': defaultContentType,
       dataType: defaultDataType
     }, config.headers);
-
-    let { responseType } = config.headers;
-    if(responseType) config.responseType = responseType;
 
     // 处理请求数据
     let params = config.data || {};
@@ -93,16 +86,13 @@ Axios.interceptors.request.use(
  */
 Axios.interceptors.response.use(
   data => {
-    let result = null;
     let serverStatus = data.data.status || 200
     let serverMsg = data.data.message || '';
     
     // 处理响应状态
     if (serverStatus < 0) {
-      // 未登陆，直接跳转到登录页，不需要提示
+      // "未登陆"
       if(serverStatus === -1) {
-          // // 跳转到登录页
-          // Store.dispatch("ROUTER_TO_SIGNIN");
           // 展示登录弹窗
           Store.dispatch("SHOW_SIGNIN_DIALOG");
       }
@@ -116,16 +106,17 @@ Axios.interceptors.response.use(
       // 打印错误信息
       Message({ type: "error", showClose: true, message: serverMsg });
 
-      return result;
+      return null;
     }
 
     // 处理响应数据
-    // let { dataType, responseType } = data.config.headers;
+    let { dataType } = data.config.headers;
+    // let { responseType } = data.config;
     if(typeof data.data === 'string') {
       data.data = JSON.parse(data.data);
     }
-    if(data.data.data && typeof data.data.data === 'string') {
-      data.data.data = JSON.parse(result.data);
+    if(data.data.data && typeof data.data.data === 'string' && dataType === 'json') {
+      data.data.data = JSON.parse(data.data.data);
     }
 
     return data;
@@ -164,7 +155,7 @@ const request = {
   get: async (url, data, options) => {
     let promise = null;
     try {
-      promise = await Axios.get(appendUrlParam(url, data), { headers: options });
+      promise = await Axios.get(appendUrlParam(url, data), options);
     } catch (e) {
       return e;
     }
@@ -173,7 +164,7 @@ const request = {
   post: async (url, data, options) => {
     let promise = null;
     try {
-      promise = await Axios.post(url, data, { headers: options });
+      promise = await Axios.post(url, data, options);
     } catch (e) {
       return e;
     }
@@ -182,7 +173,7 @@ const request = {
   put: async (url, data, options) => {
     let promise = null;
     try {
-      promise = await Axios.put(url, data, { headers: options });
+      promise = await Axios.put(url, data, options);
     } catch (e) {
       return e;
     }
@@ -191,7 +182,7 @@ const request = {
   delete: async (url, data, options) => {
     let promise = null;
     try {
-      promise = await Axios.delete(url, data, { headers: options });
+      promise = await Axios.delete(url, data, options);
     } catch (e) {
       return e;
     }
