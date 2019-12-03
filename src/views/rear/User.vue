@@ -48,7 +48,7 @@
         </div>
         
         <!-- 用户信息弹窗 -->
-        <el-dialog top="5vh" width="30%" 
+        <el-dialog top="4vh" width="30%" 
             :title="dialog.title" :visible.sync="show.dialog.detail">
             <div class="dialog-context" v-if="show.dialog.detail">
                 <el-form :model="dialog.form" ref="userInfoDialogForm" label-width="85px">

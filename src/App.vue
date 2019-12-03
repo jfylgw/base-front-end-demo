@@ -14,11 +14,11 @@
         </keep-alive>
 
         <!-- 登录弹窗 -->
-        <el-dialog width="20%" top="4vh" destroy-on-close 
+        <el-dialog width="20%" top="4vh" 
             :close-on-click-modal="false"
             title="重新登录" :visible.sync="$store.state.common.showSignInDialog"
             :before-close="beforeDialogClose">
-            <div class="dialog-context">
+            <div class="dialog-context" v-if="$store.state.common.showSignInDialog">
                 <!-- 加载动画 -->
                 <loading :IsLoading="show.isLoading" :AutoHideTime="0" Msg=""></loading>
 
@@ -122,7 +122,7 @@ export default {
                         // 隐藏加载动画
                         this.hideLoading();
                         // 保存用户信息
-                        this.USER_IN(data || this.user);
+                        this.USER_IN(data);
                         // 隐藏登录弹窗
                         this.HIDE_SIGNIN_DIALOG();
                     }
