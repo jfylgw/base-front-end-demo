@@ -104,7 +104,7 @@ Axios.interceptors.response.use(
       // else if(serverStatus === -1004) {}
 
       // 打印错误信息
-      Message({ type: "error", showClose: true, message: serverMsg });
+      if(serverStatus !== 3004) Message({ type: "error", showClose: true, message: serverMsg });
 
       return null;
     }
