@@ -86,9 +86,10 @@ const common = {
     HIDE_SIGNIN_DIALOG: (context) => {
       context.commit("SET_SHOW_SIGNIN_DIALOG", false);
     },
-    ROUTER_TO_SIGNIN: ({ state }) => {
-      Router.push({
-        name: state.signInRoute
+    ROUTER_TO_SIGNIN: (context) => {
+      context.commit("SET_SHOW_SIGNIN_DIALOG", false);
+      Router.replace({
+        path: context.state.signInRoute
       });
     },
     ADD_ROUTER_TAB: (context, params) => {

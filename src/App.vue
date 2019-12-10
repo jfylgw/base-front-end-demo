@@ -33,7 +33,7 @@
 
                 <!-- 底部按钮 -->
                 <div class="dialog-footer">
-                    <!-- <el-button @click="ROUTER_TO_SIGNIN()">返回登录页</el-button> -->
+                    <el-button @click="ROUTER_TO_SIGNIN()">返回登录页</el-button>
                     <el-button type="primary" @click="signIn">登 录</el-button>
                 </div>
             </div>
@@ -98,7 +98,7 @@ export default {
         resetForm(formRefName) {
             this.$refs[formRefName].resetFields();
         },
-        // 关闭上传弹窗前
+        // 关闭弹窗前
         beforeDialogClose(done) {
             // 隐藏登录弹窗
             this.HIDE_SIGNIN_DIALOG();
