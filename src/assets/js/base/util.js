@@ -175,3 +175,30 @@ export function stringLTrim(str) {
 export function stringRTrim(str) {
   return str.replace(/(\s*$)/g, "");
 }
+
+/***************************** 事件 ******************************************/
+
+/**
+ * 主动点击指定元素对象
+ */
+export function activeClick(elementObj) {
+  var ev = document.createEvent("MouseEvents");
+  ev.initMouseEvent(
+      "click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
+  );
+  elementObj.dispatchEvent(ev);
+}
+
+/***************************** 文件操作 ******************************************/
+
+/**
+ * 下载
+ */
+export function download(fileName, blobData) {
+  let urlObject = window.URL || window.webkitURL || window;
+  // 创建超链接对象
+  let linkObj = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+  linkObj.href = urlObject.createObjectURL(blobData);
+  linkObj.download = fileName;
+  activeClick(linkObj);
+}

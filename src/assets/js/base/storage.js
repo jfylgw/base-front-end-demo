@@ -11,10 +11,9 @@ import { validateNull } from "./validate";
  * 存储到sessionStore
  */
 export const setSessionStore = params => {
-  const { name, value, time } = params;
+  const { name, value, data, time } = params;
   let obj = {
-    type: typeof value,
-    value: value,
+    value, data,
     time: time || new Date()
   };
   window.sessionStorage.setItem(name, JSON.stringify(obj));
@@ -24,10 +23,9 @@ export const setSessionStore = params => {
  * 存储到localStore
  */
 export const setLocalStore = params => {
-  const { name, value, time } = params;
+  const { name, value, data, time } = params;
   let obj = {
-    type: typeof value,
-    value: value,
+    value, data,
     time: time || new Date()
   };
   window.localStorage.setItem(name, JSON.stringify(obj));
@@ -42,14 +40,14 @@ export const setStore = params => {
 };
 
 /**
- * 获取sessionStore的值
+ * 获取sessionStore的对应项
  */
 export const getSessionStore = name => {
   let obj = window.sessionStorage.getItem(name);
   if (validateNull(obj)) return;
   obj = JSON.parse(obj);
 
-  let type = obj.type
+  let type = typeof obj.value;
   if (type === "number") {
     obj.value = Number(obj.value);
   } else if (type === "boolean") {
@@ -59,20 +57,54 @@ export const getSessionStore = name => {
 };
 
 /**
- * 获取localStore的值
+ * 获取sessionStore的对应项的其他数据
+ */
+export const getSessionStoreData = name => {
+  let obj = window.sessionStorage.getItem(name);
+  if (validateNull(obj)) return;
+  obj = JSON.parse(obj);
+
+  let type = typeof obj.data;
+  if (type === "number") {
+    obj.data = Number(obj.data);
+  } else if (type === "boolean") {
+    obj.data = eval(obj.data);
+  }
+  return obj.data;
+};
+
+/**
+ * 获取localStore的对应项
  */
 export const getLocalStore = name => {
   let obj = window.localStorage.getItem(name);
   if (validateNull(obj)) return;
   obj = JSON.parse(obj);
 
-  let type = obj.type
+  let type = typeof obj.value;
   if (type === "number") {
     obj.value = Number(obj.value);
   } else if (type === "boolean") {
     obj.value = eval(obj.value);
   }
   return obj.value;
+};
+
+/**
+ * 获取localStore的对应项的其他数据
+ */
+export const getLocalStoreData = name => {
+  let obj = window.localStorage.getItem(name);
+  if (validateNull(obj)) return;
+  obj = JSON.parse(obj);
+
+  let type = typeof obj.data;
+  if (type === "number") {
+    obj.data = Number(obj.data);
+  } else if (type === "boolean") {
+    obj.data = eval(obj.data);
+  }
+  return obj.data;
 };
 
 /**

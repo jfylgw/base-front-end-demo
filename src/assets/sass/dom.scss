@@ -359,3 +359,15 @@ input {
       font-size: 22px;
   }
 }
+
+.noMore {
+  width: 100%;
+  min-height: 60px;
+  text-align: center;
+  color: #909399;
+
+  span {
+      line-height: 60px;
+      color: #909399;
+  }
+}

@@ -31,20 +31,26 @@
             <el-aside class="aside-area">
                 <!-- 无权限提示区 -->
                 <div class="nothing-area" v-if="!menus || menus.length === 0">
-                    <span class="warning-text">暂无任何权限，请和管理员联系</span>
+                    <span class="noMore">暂无任何权限，请和管理员联系</span>
                 </div>
                 
                 <!-- 菜单区 -->
-                <el-menu class="menu-area" :collapse="show.isCollapse" v-if="menus && menus.length > 0" 
-                    router :default-active="$route.path" :default-openeds="show.menuOpen" 
+                <el-menu class="menu-area" router v-if="menus && menus.length > 0" 
+                    :default-active="$route.path" :default-openeds="show.menuOpen" :collapse="show.isCollapse"  
                     @select="selectMenuItem">
                     <el-menu-item index="/rear/user">
                         <span slot="title">用户列表</span>
                     </el-menu-item>
-                    <el-submenu v-for="(menuGroup, i) in menus" :key="menuGroup.name" :index="i">
-                        <span slot="title" v-html="menuGroup.name"></span>
-                        <el-menu-item v-for="menu in menuGroup.menus" :key="menu.name" :index="menu.url">
-                            <span slot="title" v-html="menu.name"></span>
+                    <el-submenu v-for="submenu in pageAccess" :key="submenu.routeName" 
+                        :index="`/rear/${submenu.routeName}`">
+                        <template slot="title">
+                            <i :class="`el-icon-${submenu.icon}`" v-if="submenu.icon"></i>
+                            <span>{{ submenu.name }}</span>
+                        </template>
+                        <el-menu-item  v-for="menuitem in submenu.chlidren" :key="menuitem.routeName" 
+                            :index="`/rear/${menuitem.routeName}`">
+                            <i :class="`el-icon-${menuitem.icon}`" v-if="menuitem.icon"></i> 
+                            <span>{{ menuitem.name }}</span>
                         </el-menu-item>
                     </el-submenu>
                 </el-menu>
@@ -74,7 +80,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import Loading from "components/base/Loading";
 
 export default {
     name: 'Rear',
@@ -83,12 +88,12 @@ export default {
     // 页面model字段（必须写在return的集合中，集合中的键值会挂载到this中）
     data() {
         return {
-            msg: '',
             show: {
                 isLoading: false,
                 isCollapse: false,
                 menuOpen: []
             },
+            initRouteName: 'summary',
             menus: []
         };
     },
@@ -98,15 +103,27 @@ export default {
         ...mapGetters(['GET_USER_INFO', 'GET_PLATFORM_NAME']),
         ...mapActions(['ROUTER_TO_SIGNIN']),
         init() {
-            // // 展开所有菜单
-            // this.menus = this.user.module;
-            // for(let i=0, iLen=this.menus.length; i<iLen; i++) {
-            //     this.show.menuOpen.push(i);
-            // }
-
-            // 指定默认路由
-            if(this.$route.path === '/rear') this.$router.push({ name: 'summary' });
+            this.getMenus();
         },
+        // 获取页面数据
+        async getMenus() {
+            try {
+                // 请求接口
+                let response = await UserApi.pageAccess({});
+                if(response) {
+                    let data = response.data;
+                    if(response.status === Status.HTTP_STATUS.OK) {
+                        if(data && this.currentUser.uuid === data.uuid) {
+                            this.pageAccess = data.pageAccess || [];
+                            // 指定默认路由
+                            if(this.$route.path === '/rear') this.$router.push({ name: this.initRouteName });
+                        }
+                    }
+                }
+            } catch(err) {
+                this.$message({ type: 'error', showClose: true, message: err.message || '获取页面权限失败' });
+            }
+        }
         // 选中菜单项
         selectMenuItem(index, path, item) {
             
@@ -115,6 +132,9 @@ export default {
     computed: {
         currentUser(){
             return this.$store.state.user.userInfo;
+        },
+        platformName() {
+            return this.$store.state.common.platformName;
         }
     },
     // 当该模版加载完成（Vue钩子函数）

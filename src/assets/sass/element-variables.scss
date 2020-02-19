@@ -89,3 +89,13 @@
 .el-menu--collapse>.el-menu-item {
     min-width: unset;
 }
+
+.el-tooltip {
+    font-size: 18px;
+}
+
+.el-menu.is-active > .el-submenu__title,
+.is-active > .el-submenu__title > i,
+.el-submenu.is-active >.el-submenu__title{
+    color: $color-theme;
+}
