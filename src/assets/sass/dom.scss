@@ -371,3 +371,15 @@ input {
       color: #909399;
   }
 }
+
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #eeeeee;
+
+  i {
+    font-size: 30px;
+  }
+}
