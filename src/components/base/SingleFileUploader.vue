@@ -183,20 +183,28 @@ export default {
         },
         // 文件上传成功
         onFileSuccess(response, file, fileList) {
+            if(!response.data || (response instanceof String && response.indexOf('Error'))) {
+                this.$message({ type: 'error', showClose: true, message: `${file.name} 上传失败：${response}` });
+            }
+            else {
+                if(response.data) {
+                    file = Object.assign({}, file, response.data);
+                } 
+                this.$message({ type: 'success', showClose: true, message: `${file.name} 上传成功` });
+                this.$emit('FileUploadSuccess', {
+                    file
+                });
+            }
+            this.fileList = fileList;
             // 隐藏加载动画
             this.hideLoading();
-            this.$message({ type: 'success', showClose: true, message: `${file.name} 上传成功` });
-            if(response.data) file.key = response.data.key;
-            this.fileList = fileList;
-            this.$emit('FileUploadSuccess', {
-                file
-            });
         },
         // 文件上传失败
         onFileError(err, file, fileList) {
             // 隐藏加载动画
             this.hideLoading();
             this.$message({ type: 'error', showClose: true, message: `${file.name} 上传失败：${err.message}` });
+            // this.fileList = fileList;
         },
         // 预览文件
         onFilePreview(file) {

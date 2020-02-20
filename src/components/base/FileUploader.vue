@@ -165,7 +165,7 @@ export default {
             this.uploadedFileList.splice(0, this.uploadedFileList.length);
             this.failFileList.splice(0, this.failFileList.length);
             // 遍历追加新纪录
-            fileList.map((v,i) => {
+            fileList.map((v, i) => {
                 if(v.status === 'ready') {
                     this.readyFileList.push(v);
                 }
@@ -178,13 +178,13 @@ export default {
             });
         },
         // 通知全部文件已经处理完成
-        emitAllFileHandle(fileList) {
+        emitAllFilesHandled(fileList) {
             let handleFileNum = this.uploadedFileList.length + this.failFileList.length;
             if(handleFileNum === fileList.length) {
                 this.hideLoading();
                 if(this.uploadedFileList.length > 0) {
                     this.show.choiceBtn = true;
-                    this.$emit('AllFileHandle', {});
+                    this.$emit('AllFilesHandled', {});
                 }
             } else {
                 this.show.choiceBtn = false;
@@ -193,10 +193,8 @@ export default {
         // 返回已传项
         returnUploadedFiles() {
             // 筛选已传项
-            let files = this.uploadedFileList.map((v, i) => {
-                if(v.response) {
-                    return v.response.data;
-                }
+            let files = this.uploadedFileList.filter((v) => {
+                return v.response && v.response.data && v.status === 'success';
             });
 
             if(files.length >0) {
@@ -204,7 +202,7 @@ export default {
                 this.$emit('ReturnUploadedFiles', { files });
             }
             else {
-                this.$message({ type: "error", showClose: true, message: '没有已上传项可供选中' });
+                this.$message({ type: "error", showClose: true, message: '没有已成功上传的文件可供选中' });
             }
         },
         // 清除文件
@@ -287,11 +285,22 @@ export default {
         },
         // 文件上传成功
         onFileSuccess(response, file, fileList) {
+            if(!response.data || (response instanceof String && response.indexOf('Error'))) {
+                this.$message({ type: 'error', showClose: true, message: `${file.name} 上传失败：${response}` });
+            }
+            else {
+                if(response.data) {
+                    let index = fileList.findIndex((v) => {
+                        return v.uid === file.uid;
+                    });
+                    fileList[index] = Object.assign({}, fileList[index], response.data);
+                } 
+                this.$message({ type: 'success', showClose: true, message: `${file.name} 上传成功` });
+            }
             // 更新文件列表
             this.updateFileList(fileList);
-            this.$message({ type: 'success', showClose: true, message: `${file.name} 上传成功` });
             // 判断是否处理完所有文件
-            this.emitAllFileHandle(fileList);
+            this.emitAllFilesHandled(fileList);
         },
         // 文件上传失败
         onFileError(err, file, fileList) {
@@ -299,7 +308,7 @@ export default {
             this.updateFileList(fileList);
             this.$message({ type: 'error', showClose: true, message: `${file.name} 上传失败：${err.message}` });
             // 判断是否处理完所有文件
-            this.emitAllFileHandle(fileList);
+            this.emitAllFilesHandled(fileList);
         },
         // 预览文件
         onFilePreview(file) {
