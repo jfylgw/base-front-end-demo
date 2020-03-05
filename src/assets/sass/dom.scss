@@ -92,8 +92,22 @@ input {
 
   }
 }
-
 .btn-white-clicked {
+  background-color: $color-white-active;
+}
+
+.btn-default {
+  background-color: $color-white;
+  color: $color-text-dark;
+  border: 1px solid $color-text-darkgray;
+  &:hover {
+    background-color: $color-white-hover;
+  }
+  &:active {
+    background-color: $color-white-active;
+  }
+}
+.btn-default-clicked {
   background-color: $color-white-active;
 }
 
@@ -110,7 +124,6 @@ input {
 
   }
 }
-
 .btn-theme-clicked {
   background-color: $color-theme-active;
 }
@@ -224,13 +237,6 @@ input {
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      width: 270px;
-      margin: 28px auto;
-      padding: 8px 12px;
-      &:hover {
-        box-shadow: $color-theme 0 0 4px 2px;
-        background-color: white;
-      }
 
       input, textarea, select, a, span, img, i {
         margin: auto;
@@ -241,8 +247,8 @@ input {
         color: $color-theme;
       }
 
-      .input-text {
-        width: 80%;
+      .input-text, .input-text input {
+        width: 97%;
         font-size: 16px;
         border: 0;
         outline: none;

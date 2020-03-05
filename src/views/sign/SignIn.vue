@@ -28,35 +28,35 @@
         ></vue-particles>
 
         <!-- 加载组件 -->
-        <loading :IsLoading="show.isLoading" @hideLoading="hideLoading"></loading>
+        <Loading :IsLoading="show.isLoading" @hideLoading="hideLoading"></Loading>
 
         <!-- 页头 -->
         <div class="head-area">
-            <span class="title" v-html="GET_PLATFORM_NAME()"></span>
+            <span class="title">{{platformName}}</span>
         </div>
 
         <!-- 主体 -->
         <div class="body-area">
             <!-- 表单 -->
-            <form class="form" @keyup.enter="signIn">
-                <div class="form-item">
-                    <i class="iconfont xia-people"></i>
-                    <input type="text" class="input-text" placeholder="帐号" v-model="user.name"/>
-                </div>
-                <div class="form-item">
-                    <i class="iconfont xia-lock"></i>
-                    <input type="password" class="input-text" placeholder="密码" v-model="user.password"/>
-                </div>
+            <el-form ref="signInForm" class="form-input-area" v-if="show.interface === 'signIn'"
+                :model="dialog.form" :rules="dialog.rules" 
+                @keyup.enter="signIn">
+                <el-form-item class="form-item" prop="username">
+                    <template slot="label"><i class="iconfont xia-people"></i></template>
+                    <el-input class="input-text" clearable placeholder="帐 号" v-model="dialog.form.username"/>
+                </el-form-item>
+                <el-form-item class="form-item" prop="password">
+                    <template slot="label"><i class="iconfont xia-lock"></i></template>
+                    <el-input class="input-text" clearable show-password placeholder="密 码" v-model="dialog.form.password"/>
+                </el-form-item>
                 <div class="btns-area">
-                    <a class="btn btn-theme btn-submit" @click="signIn">
-                        <span class="">登录</span>
-                    </a>
+                    <a class="btn btn-theme btn-submit" @click="signIn">登 入</a>
                 </div>
                 <div class="links-area">
-                    <router-link to="/sign-up" class="link">注册帐号</router-link>
-                    <router-link to="/change-pass" class="link">忘记密码</router-link>
+                    <el-link type="primary" class="link" @click="showRegisterInterface">注册帐号</el-link>
+                    <el-link type="primary" class="link" @click="showEditPassInterface">忘记密码</el-link>
                 </div>
-            </form>
+            </el-form>
             <!-- 系统消息 -->
             <span v-html="msg"></span>
         </div>
@@ -143,7 +143,7 @@ export default {
             } catch(err) {
                 // 隐藏加载动画
                 this.hideLoading();
-                this.$message({ type: "error", showClose: true, message: "登录失败" });
+                this.$message({ type: "error", showClose: true, message: "登入失败" });
             }
         }
     },
@@ -199,11 +199,12 @@ export default {
             box-shadow: rgba(0, 0, 0, 0.1) 0 0 20px 2px;
 
             .form-item {
-                width: 270px;
-                margin: 28px auto;
-                padding: 8px 12px;
-                border: 1px solid $color-theme;
-                border-radius: 192px;
+                width: fit-content;
+                max-width: 300px;
+                
+                .input-text, .input-text input {
+                    border-bottom: 1px solid $color-theme;
+                }
             }
 
             .login-code {
@@ -226,6 +227,7 @@ export default {
 
                 .btn-submit {
                     width: 265px;
+                    padding: 12px 16px;
                     border-radius: 56px;
                 }
 

@@ -99,3 +99,9 @@
 .el-submenu.is-active >.el-submenu__title{
     color: $color-theme;
 }
+
+.el-menu-item {
+    span {
+        display: unset;
+    }
+}

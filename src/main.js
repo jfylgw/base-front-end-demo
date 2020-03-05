@@ -28,6 +28,16 @@ const isDebug = process.env.NODE_ENV !== 'production';
 Vue.config.productionTip = isDebug;
 Vue.config.silent = isDebug;
 
+// 过长字段省略
+Vue.filter('ellipsis', function (value, length) {
+  if (!value) return '';
+  length = length || 10;
+  if (value.length > length) {
+      return value.slice(0, length) + '...';
+  }
+  return value;
+});
+
 new Vue({
   router,
   store,

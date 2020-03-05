@@ -17,6 +17,7 @@ const common = {
     theme: Storage.getSessionStore("theme") || "", // 主题名称
     showSignInDialog: true, // 是否展示全局登录弹窗
     screenLock: false, // 是否锁屏
+    routeAccessBtns: [], // 当前路由的需要授权的按钮
     routerTabs: [], // 路由标签页
     componentTabs: [], // 组件标签页
     currentComponentTab: {} // 当前组件标签页
@@ -29,6 +30,7 @@ const common = {
     GET_SHOW_SIGNIN_DIALOG: state => state.showSignInDialog,
     GET_THEME: state => state.theme,
     GET_SCREEN_LOCK: state => state.screenLock,
+    GET_ROUTER_ACCESS_BTN: state => state.routeAccessBtns,
     GET_ROUTER_TABS: state => state.routerTabs,
     GET_COMPONENT_TABS: state => state.componentTabs,
     GET_CURRENT_COMPONENT_TAB: state => state.currentComponentTab
@@ -51,6 +53,13 @@ const common = {
         name: "screenLock",
         value: state.screenLock
       });
+    },
+    SET_ROUTE_ACCESS_BTNS: (state, btns) => {
+      state.routeAccessBtns = btns;
+      // Storage.setSessionStore({
+      //   name: "routeAccessBtns",
+      //   value: state.routeAccessBtns
+      // });
     },
     SET_ROUTER_TABS: (state, tabs) => {
       state.routerTabs = tabs;
@@ -91,6 +100,12 @@ const common = {
       Router.replace({
         path: context.state.signInRoute
       });
+    },
+    CHANGE_ROUTE_ACCESS_BTNS: (context, params) => {
+      context.commit("SET_ROUTE_ACCESS_BTNS", params);
+    },
+    CLEAN_ROUTE_ACCESS_BTNS: (context) => {
+      context.commit("SET_ROUTE_ACCESS_BTNS", []);
     },
     ADD_ROUTER_TAB: (context, params) => {
       // 加入到标签页数组
