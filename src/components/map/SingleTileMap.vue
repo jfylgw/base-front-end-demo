@@ -61,12 +61,7 @@ export default {
             type: String,
             default: ''
         },
-        // 范围，WKT
-        Extent: {
-            type: String,
-            default: ''
-        },
-        isCollapse: {
+        UpdateSize: {
             type: Boolean
         }
     },
@@ -75,38 +70,7 @@ export default {
         return {}
     },
     watch: {
-        async BizUuid(newVal) {
-            let url = OlOption.mapParams.baseTileUrl;
-
-            if(newVal) {
-                // 私有库图层地址
-                url = OlOption.getXagPrivateTileUrl(newVal, this.Token);
-            }
-
-            // 设置新瓦片源
-            let layer = this.getTileGroupLayerByName('base')[0];
-            let source = OlUtil.mapUtil.createSource({
-                type: "XYZ",
-                url: url,
-                attributions: {
-                    vectorName: 'base-tile-source'
-                },
-            });
-            layer.setSource(source);
-        },
-        async Extent(newVal) {
-            // 移除之前的标注
-            let layer = this.getExtentGroupLayerByName('extent')[0];
-            layer.getSource().clear();
-
-            if(newVal) {
-                // 加载范围
-                this.loadExtent(newVal);
-                // 定位到指定位置
-                this.fitByWkt(newVal);
-            }
-        },
-        isCollapse() {
+        UpdateSize() {
             this.map.updateSize()
         }
     },
@@ -131,19 +95,28 @@ export default {
             this.tileLayerGroup = await new OlLayer.Group({
                 layers: [
                     OlUtil.mapUtil.createTileLayer()
-                ]
+                ],
+                attributes: {
+                    name: 'tileLayerGroup'
+                }
             });
             // 注记图层
             this.annoLayerGroup = await new OlLayer.Group({
                 layers: [
                     OlUtil.mapUtil.createAnnoLayer()
-                ]
+                ],
+                attributes: {
+                    name: 'annoLayerGroup'
+                }
             });
             // 范围边界图层
             this.extentLayerGroup = await new OlLayer.Group({
                 layers: [
                     OlUtil.mapUtil.createFeatureLayer('extent'),
-                ]
+                ],
+                attributes: {
+                    name: 'extentLayerGroup'
+                }
             });
 
             let mapLayers = this.map.getLayers();
@@ -224,6 +197,37 @@ export default {
                     return layer;
                 }
             });
+        },
+        changeTile(bizUuid) {
+            let url = OlOption.mapParams.baseTileUrl;
+
+            if(bizUuid) {
+                // 私有库图层地址
+                url = OlOption.getXagPrivateTileUrl(bizUuid, this.Token);
+            }
+
+            // 设置新瓦片源
+            let layer = this.getTileGroupLayerByName('base')[0];
+            let source = OlUtil.mapUtil.createSource({
+                type: "XYZ",
+                url: url,
+                attributions: {
+                    vectorName: 'base-tile-source'
+                },
+            });
+            layer.setSource(source);
+        },
+        changeExtent(extent) {
+            // 移除之前的标注
+            let layer = this.getExtentGroupLayerByName('extent')[0];
+            layer.getSource().clear();
+
+            if(extent) {
+                // 加载范围
+                this.loadExtent(extent);
+                // 定位到指定位置
+                this.fitByWkt(extent);
+            }
         },
         /**
          * 显隐范围图层

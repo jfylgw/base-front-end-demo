@@ -43,11 +43,11 @@
                 @keyup.enter="signIn">
                 <el-form-item class="form-item" prop="username">
                     <template slot="label"><i class="iconfont xia-people"></i></template>
-                    <el-input class="input-text" clearable placeholder="帐 号" v-model="dialog.form.username"/>
+                    <el-input class="input-text" clearable placeholder="帐 号" v-model.trim="dialog.form.username"/>
                 </el-form-item>
                 <el-form-item class="form-item" prop="password">
                     <template slot="label"><i class="iconfont xia-lock"></i></template>
-                    <el-input class="input-text" clearable show-password placeholder="密 码" v-model="dialog.form.password"/>
+                    <el-input class="input-text" clearable show-password placeholder="密 码" v-model.trim="dialog.form.password"/>
                 </el-form-item>
                 <div class="btns-area">
                     <a class="btn btn-theme btn-submit" @click="signIn">登 入</a>

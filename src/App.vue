@@ -24,10 +24,10 @@
 
                 <el-form ref="signInDialogForm" label-width="85px" :model="dialog.form" :rules="dialog.rules" @keyup.enter="signIn">
                     <el-form-item label="名称" prop="username">
-                        <el-input v-model="dialog.form.username" placeholder="请输入名称" clearable></el-input>
+                        <el-input v-model.trim="dialog.form.username" placeholder="请输入名称" clearable></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="password">
-                        <el-input v-model="dialog.form.password" placeholder="请输入密码" show-password clearable></el-input>
+                        <el-input v-model.trim="dialog.form.password" placeholder="请输入密码" show-password clearable></el-input>
                     </el-form-item>
                 </el-form>
 

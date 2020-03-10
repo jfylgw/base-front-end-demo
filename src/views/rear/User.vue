@@ -16,7 +16,7 @@
                 <div class="input-group">
                     <el-input placeholder="请输入关键字" prefix-icon="el-icon-search"
                         maxlength="10" show-word-limit clearable
-                        @keydown.enter.native="search" v-model="user.keyword"></el-input>
+                        @keydown.enter.native="search" v-model.trim="user.keyword"></el-input>
                 </div>
             </div>
         </div>
@@ -53,13 +53,13 @@
             <div class="dialog-context" v-if="show.dialog.detail">
                 <el-form :model="dialog.form" ref="userInfoDialogForm" label-width="85px">
                     <el-form-item label="ClientId" prop="clientId">
-                        <el-input v-model="dialog.form.clientId" readonly></el-input>
+                        <el-input v-model.trim="dialog.form.clientId" readonly></el-input>
                     </el-form-item>
                     <el-form-item label="Secret" prop="secret">
-                        <el-input v-model="dialog.form.secret" readonly></el-input>
+                        <el-input v-model.trim="dialog.form.secret" readonly></el-input>
                     </el-form-item>
                     <el-form-item label="Telephone" prop="telephone">
-                        <el-input v-model="dialog.form.telephone" readonly></el-input>
+                        <el-input v-model.trim="dialog.form.telephone" readonly></el-input>
                     </el-form-item>
                 </el-form>
             </div>
