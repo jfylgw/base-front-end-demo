@@ -17,9 +17,19 @@
             <div id="mouse-position" class="mouse-position mouse-position-custom"></div>
         </div>
 
+        <!-- 定位工具栏 -->
+        <div class="map-tools location-tools" v-show="show.locationTools">
+            <div class="map-tool" v-for="tool in mapTools.location" :key="tool.name">
+                <a class="tool-btn" :title="tool.name" v-show="tool.show" @click="tool.func()">
+                    <i :class="tool.iconfont" v-if="tool.iconfont"></i>
+                    <span :class="tool.spanClass" v-if="tool.spanClass"></span>
+                </a>
+            </div>
+        </div>
+
         <!-- 缩放工具栏 -->
         <div class="map-tools zoom-tools" v-show="show.zoomTools">
-            <div class="map-tool" v-for="tool in mapTools" :key="tool.name">
+            <div class="map-tool" v-for="tool in mapTools.zoom" :key="tool.name">
                 <a class="tool-btn" :title="tool.name" v-show="tool.show" @click="tool.func()">
                     <i :class="tool.iconfont" v-if="tool.iconfont"></i>
                     <span :class="tool.spanClass" v-if="tool.spanClass"></span>

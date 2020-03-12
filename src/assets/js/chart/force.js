@@ -67,7 +67,7 @@ export function force(dom, _id, data) {
     .enter()
     .append("text")
     .attr("class", "linetext")
-    .attr("dx", 80)
+    .attr("dx", 100)
     .attr("dy", -5)
     .style("pointer-events", "none")
     .style("font-size", 14)
@@ -126,7 +126,10 @@ export function force(dom, _id, data) {
   .attr('y', 5)
   .attr("text-anchor", "middle")
   .style("pointer-events", "none")
-  .style("font-size", 16)
+  .style("font-size", function(node) {
+    let length = node.node.length
+    return length < 4 ? 16 : length < 6 ? 14 : 12
+  })
   .style('fill',function(node){
       return "#FFFFFF"
   })
@@ -135,8 +138,9 @@ export function force(dom, _id, data) {
 
   simulation.nodes(nodes).on("tick", ticked)
 
-  simulation.force("link").links(relationships).distance(function() {
-    return 200 + Math.floor(Math.random() * (100 - 1) + 1)
+  simulation.force("link").links(relationships).distance(function(d) {
+    let distance = 200 + 60 * d.source.counts
+    return distance > 700 ? 700 : distance
   })
 
   function ticked() {
@@ -191,20 +195,17 @@ export function force(dom, _id, data) {
       nodes: [],
       relationships: []
     }
-    var nodeArr = []
-    data.forEach(function(item) {
-      nodeArr.push(item.node2)
-      nodeArr.push(item.node1)
+
+    data.graphsJson.forEach(function(item) {
       graph.relationships.push({
         source: item.node2,
         target: item.node1,
         relationshipProperty: item.relationshipProperty
       })
     })
-    
-    nodeArr = Array.from(new Set(nodeArr))
-    nodeArr.forEach(function(item) {
-      graph.nodes.push({node: item})
+
+    data.nodelinksJson.forEach(function(item) {
+      graph.nodes.push({ node: item.node, counts: item.counts})
     })
 
     return graph

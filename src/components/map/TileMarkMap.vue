@@ -17,9 +17,19 @@
             <div id="mouse-position" class="mouse-position mouse-position-custom"></div>
         </div>
 
+        <!-- 定位工具栏 -->
+        <div class="map-tools location-tools" v-show="show.locationTools">
+            <div class="map-tool" v-for="tool in mapTools.location" :key="tool.name">
+                <a class="tool-btn" :title="tool.name" v-show="tool.show" @click="tool.func()">
+                    <i :class="tool.iconfont" v-if="tool.iconfont"></i>
+                    <span :class="tool.spanClass" v-if="tool.spanClass"></span>
+                </a>
+            </div>
+        </div>
+
         <!-- 缩放工具栏 -->
         <div class="map-tools zoom-tools" v-show="show.zoomTools">
-            <div class="map-tool" v-for="tool in mapTools" :key="tool.name">
+            <div class="map-tool" v-for="tool in mapTools.zoom" :key="tool.name">
                 <a class="tool-btn" :title="tool.name" v-show="tool.show" @click="tool.func()">
                     <i :class="tool.iconfont" v-if="tool.iconfont"></i>
                     <span :class="tool.spanClass" v-if="tool.spanClass"></span>
@@ -122,25 +132,38 @@ export default {
             this.tileLayerGroup = await new OlLayer.Group({
                 layers: [
                     OlUtil.mapUtil.createTileLayer('base', OlOption.getXagPrivateTileUrl(this.BizUuid, this.Token))
-                ]
+                ],
+                attributes: {
+                    name: 'tileLayerGroup'
+                }
             });
             // 注记图层
             this.annoLayerGroup = await new OlLayer.Group({
                 layers: [
                     OlUtil.mapUtil.createAnnoLayer()
-                ]
+                ],
+                attributes: {
+                    name: 'annoLayerGroup'
+                }
             });
             // 范围边界图层
             this.extentLayerGroup = await new OlLayer.Group({
                 layers: [
                     OlUtil.mapUtil.createFeatureLayer('extent'),
                     OlUtil.mapUtil.createFeatureLayer('highlight')
-                ]
+                ],
+                attributes: {
+                    name: 'extentLayerGroup'
+                }
             });
             // 标注图层
             this.featureLayerGroup = await new OlLayer.Group({
-                layers: layers
+                layers: layers,
+                attributes: {
+                    name: 'featureLayerGroup'
+                }
             });
+            
             let mapLayers = this.map.getLayers();
             mapLayers.insertAt(0, this.tileLayerGroup);
             mapLayers.insertAt(1, this.annoLayerGroup);

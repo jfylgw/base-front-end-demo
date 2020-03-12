@@ -1,4 +1,3 @@
-
 import * as OlInteraction from "ol/interaction";
 import * as OlUtil from "assets/js/map/ol-util";
 import * as OlOption from "assets/js/map/ol-option";
@@ -14,31 +13,44 @@ export default {
     return {
       show: {
         mapCoords: false, // 地图坐标框
-        zoomTools: true // 缩放工具条
+        zoomTools: true, // 缩放工具条
+        locationTools: true, // 定位工具
       },
       mapTools: {
-        zoomIn: {
-          name: "放大",
-          show: true,
-          iconfont: "iconfont xia-plus",
-          func: () => {
-            this.zoomIn();
+        location: {
+          locationFit: {
+            name: "定位",
+            show: true,
+            iconfont: "iconfont el-icon-place",
+            func: () => {
+              if(this.Extent) this.fitByWkt(this.Extent);
+            }
           }
         },
-        zoomLv: {
-          name: "缩放级别",
-          show: true,
-          spanClass: "zoom-lv",
-          func: () => {},
-          children: [],
-          isChildVertical: false
-        },
-        zoomOut: {
-          name: "缩小",
-          show: true,
-          iconfont: "iconfont xia-minus",
-          func: () => {
-            this.zoomOut();
+        zoom: {
+          zoomIn: {
+            name: "放大",
+            show: true,
+            iconfont: "iconfont xia-plus",
+            func: () => {
+              this.zoomIn();
+            }
+          },
+          zoomLv: {
+            name: "缩放级别",
+            show: true,
+            spanClass: "zoom-lv",
+            func: () => {},
+            children: [],
+            isChildVertical: false
+          },
+          zoomOut: {
+            name: "缩小",
+            show: true,
+            iconfont: "iconfont xia-minus",
+            func: () => {
+              this.zoomOut();
+            }
           }
         }
       },
