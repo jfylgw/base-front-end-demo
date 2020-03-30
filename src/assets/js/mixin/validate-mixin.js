@@ -1,4 +1,23 @@
 export default {
+    data() {
+        return {
+            dialog: {
+                rules: {
+                    name: [
+                        { required: true, message: '请填写名称', trigger: 'blur' },
+                        { validator: this.validateCharAndZh, trigger: 'blur' }
+                    ],
+                    num: [
+                        { required: true, message: '请填写数字', trigger: 'blur' },
+                        { type: 'number', message: '必须为数字值'},
+                    ],
+                    params: [
+                        { validator: this.validateJson, trigger: 'blur' },
+                    ]
+                }
+            }
+        };
+    },
     methods: {
         validateNull(rule, value, callback) {
             if (value) {
