@@ -73,6 +73,8 @@ export default {
     methods: {
         async init() {
             let option = Object.assign({}, OlOption.olParams, OlOption.getOlControls(), OlOption.getImageViewOptions());
+            // wkt转换工具
+            this.wktUtil = new OlFormat.WKT();
             // 创建地图
             this.map = OlUtil.mapUtil.createMap(this.Id, option);
             // 地图设置
@@ -83,34 +85,28 @@ export default {
             this.keySetting();
             // 传播事件：地图已准备就绪
             this.$emit(`${this.Id}Loaded`, {});
-            // wkt转换工具
-            this.wktUtil = new OlFormat.WKT();
+        },
+        createFeatureLayer(val) {
+            // 设置样式
+            let style = val.config.style;
+            style.image = style.brush;
+            if(style.brush.isCustom) {
+                style.image.type = 'Icon';           
+            } else style.image.type = 'Circle';
+            style.image.stroke = style.image.stroke || { ...style.image.fill, width: 2 };
+            style.image.fill.color = Formatter.colorRgba(style.image.fill.color, 1);
+            
+            // 整合配置
+            let option = {
+                attributes: val,
+                style: style
+            };
+            return OlUtil.mapUtil.createFeatureLayer(val.name, option);
         },
         /**
          * 图层设置
          */
         async layerSetting() {
-            let layers = [];
-            // 加载模块标签
-            this.LabelSet.map((val) => {
-                // 设置样式
-                let style = val.config.style;
-                style.image = style.brush;
-                if(style.brush.isCustom) {
-                    style.image.type = 'Icon';           
-                } else style.image.type = 'Circle';
-                style.image.stroke = style.image.stroke || { ...style.image.fill, width: 2 };
-                style.image.fill.color = Formatter.colorRgba(style.image.fill.color, 1);
-                
-                // 整合配置
-                let option = {
-                    attributes: val,
-                    style: style
-                };
-                // 创建图层
-                layers.push(OlUtil.mapUtil.createFeatureLayer(val.name, option));
-            });
-
             // 图片图层
             this.imageLayerGroup = await new OlLayer.Group({
                 layers: [
@@ -139,7 +135,12 @@ export default {
                     name: 'extentLayerGroup'
                 }
             });
+            
             // 标注图层
+            let layers = [];
+            this.LabelSet.map((val) => {
+                layers.push(this.createFeatureLayer(val));
+            });
             this.featureLayerGroup = await new OlLayer.Group({
                 layers: layers,
                 attributes: {
@@ -193,6 +194,22 @@ export default {
                 feature.setGeometry(geometry);
 
                 let layer = this.getFeatureGroupLayerByName(val.type)[0];
+                if(layer) {
+                    layer.getSource().addFeature(feature);
+                }
+            });
+        },
+        /**
+         * 将标注全部加载到指定图层中
+         */
+        loadMarkSetToLayer(markSet, layerName) {
+            let layer = this.getFeatureGroupLayerByName(layerName)[0];
+            markSet.map(val => {
+                if(val.type || val.type.length === 0) val.type = layerName;
+                let feature = OlUtil.transformUtil.wkt2feature(val.wkt, val.id, val);
+                let geometry = this.wktUtil.readGeometry(val.wkt);
+                feature.setGeometry(geometry);
+                
                 if(layer) {
                     layer.getSource().addFeature(feature);
                 }

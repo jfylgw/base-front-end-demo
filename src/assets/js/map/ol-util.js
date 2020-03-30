@@ -118,8 +118,8 @@ export const mapUtil = {
     },
     createLayer(option_) {
         let oLayer;
-        let type = this.detectLayerType(option_);
-        let oSource = this.createSource(option_.source);
+        let type = mapUtil.detectLayerType(option_);
+        let oSource = mapUtil.createSource(option_.source);
         if (!oSource) return;
     
         let layerConfig = {};
@@ -389,11 +389,11 @@ export const mapUtil = {
         if(!option_) {
             option_ = {
                 hitTolerance: 0,
-                multi: true
+                multi: false
             };
         } else {
             option_.hitTolerance = option_.hitTolerance ? parseInt(option_.hitTolerance) : 0;
-            option_.multi = option_.multi || true;
+            option_.multi = option_.multi || false;
         }
         
         let { hitTolerance, multi, filter, layers } = option_;
@@ -578,11 +578,11 @@ export const mapUtil = {
         if(!fs || fs.length === 0) return fs;
 
         // 1.按最大矩形过滤
-        fs = this.getFeaturesByExtent(feature, fs);
+        fs = mapUtil.getFeaturesByExtent(feature, fs);
         // 2.按点在面内过滤
-        fs = this.getFeaturesByInsidePoints(feature, fs);
+        fs = mapUtil.getFeaturesByInsidePoints(feature, fs);
         // // 3.按边相交过滤
-        // fs = this.getFeaturesByIntersects(feature, fs);
+        // fs = mapUtil.getFeaturesByIntersects(feature, fs);
         // 4.按自定义规则过滤
         if(customFilter && customFilter instanceof Function) {
             fs = customFilter(feature, fs, layer);
@@ -709,7 +709,55 @@ export const mapUtil = {
         // 如果指定了样式，就用指定样式
         if (style_) feature.setStyle(style_);
         return feature;
-    }
+    },
+    /**
+   * 获取几何对象中心点
+   * geometry_：几何对象，类型为 ol.geom.Geometry
+   */
+    getCenterByGeometry(geometry_) {
+        let type = geometry_.getType();
+        if (type === "Point") {
+            return geometry_.getCoordinates();
+        } else if (type === "Circle") {
+            return geometry_.getCenter();
+        } else if (type === "LineString") {
+            return geometry_.getFirstCoordinate();
+        } else if (type === "Polygon") {
+            return geometry_
+                .getInteriorPoint()
+                .getCoordinates()
+                .slice(0, 2);
+        }
+    },
+    /**
+   * 获取wkt对应的中心点
+   * wkt_：wkt字符串
+   */
+    getCenterByWkt(wkt_) {
+        return mapUtil.getCenterByGeometry(transformUtil.wkt2geometry(wkt_));
+    },
+    /**
+     * 添加覆盖物
+     * element_：自定义展示内容
+     * wkt_：wkt字符串
+     * offset_：格式为：[水平偏移，垂直偏移]，默认为[0,0]，起点为展示内容左上角，横轴向右为正，纵轴向下为正
+     * 返回ol.Overlay
+     */
+    addOverlay(element_, wkt_, offset_) {
+        if (!element_ || !wkt_) return null;
+        let offset = offset_ || [0, 0];
+        let overlay = new Ol.Overlay({
+            id: element_.id,
+            position: mapUtil.getCenterByWkt(wkt_),
+            element: element_,
+            offset,
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250 // 当OverLay超出地图边界时，为了OverLay全部可见，地图平移的耗时，单位毫秒.
+            }
+        });
+        return overlay;
+    },
 };
 
 /**
@@ -795,6 +843,7 @@ export const transformUtil = {
      * 返回地图坐标，坐标类型见变量 OlOption.mapProjection 的值
      */
     coord_biz2map(coord_) {
+        if(OlOption.bizProjection === OlOption.mapProjection) return coord_;
         return OlProj.transform(
             [parseFloat(coord_[0]), parseFloat(coord_[1])],
             OlOption.bizProjection,
@@ -807,6 +856,7 @@ export const transformUtil = {
      * 返回业务坐标，坐标类型见变量 dataCoordSystem 的值
      */
     coord_map2biz(coord_) {
+        if(OlOption.bizProjection === OlOption.mapProjection) return coord_;
         return OlProj.transform(
             [parseFloat(coord_[0]), parseFloat(coord_[1])],
             OlOption.mapProjection,
@@ -890,6 +940,7 @@ export const transformUtil = {
      * extent_：格式为 [x1,y1,x2,y2]
      */
     extent_biz2map(extent_) {
+        if(OlOption.bizProjection === OlOption.mapProjection) return extent_;
         return OlProj.transformExtent(
             extent_,
             OlOption.bizProjection,
@@ -901,6 +952,7 @@ export const transformUtil = {
      * extent_：格式为 [x1,y1,x2,y2]
      */
     extent_map2biz(extent_) {
+        if(OlOption.bizProjection === OlOption.mapProjection) return extent_;
         return OlProj.transformExtent(
             extent_,
             OlOption.mapProjection,
@@ -1021,7 +1073,7 @@ export const transformUtil = {
         if (transformUtil.getGeometryTypeByWkt(wkt_) === "Polygon") {
             coords = coords[0];
         }
-        return this.coords_biz2screen(coords, width, height);
+        return transformUtil.coords_biz2screen(coords, width, height);
     },
     /**
      * 将WKT字符串转化为坐标替换到指定标注中

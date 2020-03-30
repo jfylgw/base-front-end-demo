@@ -103,31 +103,27 @@ export default {
             // // 加载范围
             // this.loadExtent();
         },
+        createFeatureLayer(val) {
+            // 设置样式
+            let style = val.config.style;
+            style.image = style.brush;
+            if(style.brush.isCustom) {
+                style.image.type = 'Icon';           
+            } else style.image.type = 'Circle';
+            style.image.stroke = style.image.stroke || { ...style.image.fill, width: 2 };
+            style.image.fill.color = Formatter.colorRgba(style.image.fill.color, 1);
+            
+            // 整合配置
+            let option = {
+                attributes: val,
+                style: style
+            };
+            return OlUtil.mapUtil.createFeatureLayer(val.name, option);
+        },
         /**
          * 图层设置
          */
         async layerSetting() {
-            let layers = [];
-            // 加载模块标签
-            this.LabelSet.map((val) => {
-                // 设置样式
-                let style = val.config.style;
-                style.image = style.brush;
-                if(style.brush.isCustom) {
-                    style.image.type = 'Icon';           
-                } else style.image.type = 'Circle';
-                style.image.stroke = style.image.stroke || { ...style.image.fill, width: 2 };
-                style.image.fill.color = Formatter.colorRgba(style.image.fill.color, 1);
-                
-                // 整合配置
-                let option = {
-                    attributes: val,
-                    style: style
-                };
-                // 创建图层
-                layers.push(OlUtil.mapUtil.createFeatureLayer(val.name, option));
-            });
-
             // 瓦片图层
             this.tileLayerGroup = await new OlLayer.Group({
                 layers: [
@@ -156,7 +152,12 @@ export default {
                     name: 'extentLayerGroup'
                 }
             });
+
             // 标注图层
+            let layers = [];
+            this.LabelSet.map((val) => {
+                layers.push(this.createFeatureLayer(val));
+            });
             this.featureLayerGroup = await new OlLayer.Group({
                 layers: layers,
                 attributes: {
@@ -199,7 +200,7 @@ export default {
             if(attribution) attribution.style.display = "none";
         },
         /**
-         * 加载标注到指定图层中
+         * 加载标注到对应图层中
          */
         loadMarkSet(markSet) {
             markSet.map(val => {
@@ -208,6 +209,17 @@ export default {
                 if (layer) {
                     layer.getSource().addFeature(feature);
                 }
+            });
+        },
+        /**
+         * 将标注全部加载到指定图层中
+         */
+        loadMarkSetToLayer(markSet, layerName) {
+            let layer = this.getFeatureGroupLayerByName(layerName)[0];
+            markSet.map(val => {
+                if(val.type || val.type.length === 0) val.type = layerName;
+                let feature = OlUtil.transformUtil.wkt2feature(val.wkt, val.id, val);
+                layer.getSource().addFeature(feature);
             });
         },
         /**

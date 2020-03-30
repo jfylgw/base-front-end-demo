@@ -389,3 +389,60 @@ input {
     font-size: 30px;
   }
 }
+
+.bubble {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 200px;
+  max-width: 300px;
+  width: fit-content;
+  width: -moz-fit-content;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  &:after {
+    content:"";
+    display:block;
+    position:absolute;
+    bottom:-15px;
+    left:30px;
+    border-width:15px 15px 0;
+    border-style:solid;
+    border-color:#fff transparent;
+    width:0;
+  }
+
+  .bubble-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    z-index: 1;
+  }
+
+  .bubble-title {
+    justify-content: flex-start;
+    font-weight: bold;
+  }
+
+  .bubble-body {
+    margin-top: 15px;
+
+    .bubble-context {
+      font-size: 14px;
+      color: $color-text-dark;
+    }
+  }
+
+  .bubble-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-top: 15px;
+  }
+
+}

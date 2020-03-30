@@ -1,6 +1,6 @@
 /**
 * @name 验证码组件
-* @description
+* @description 验证码应是由后端生成的，此组件只用于紧急应付
 * @author gongjf
 * @since 2020年3月2日 14:50:32
 */

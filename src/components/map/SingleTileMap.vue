@@ -73,6 +73,11 @@ export default {
         },
         UpdateSize: {
             type: Boolean
+        },
+        // 范围
+        Extent: {
+            type: String,
+            default: null
         }
     },
     mixins: [mapMixin],
@@ -233,6 +238,7 @@ export default {
             layer.getSource().clear();
 
             if(extent) {
+                this.Extent = extent;
                 // 加载范围
                 this.loadExtent(extent);
                 // 定位到指定位置

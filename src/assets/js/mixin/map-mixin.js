@@ -122,6 +122,17 @@ export default {
       });
     },
     /**
+     * 设置中心点
+     */
+    setCenter(wkt) {
+      let coord = OlUtil.mapUtil.getCenterByWkt(wkt);
+      // 设置动画效果
+      this.map.getView().animate({
+        center: coord,
+        duration: 250
+      });
+    },
+    /**
      * 放大
      */
     zoomIn(lv_) {
@@ -156,7 +167,7 @@ export default {
           this_.removeLastPoint();
         } else if (k === 27) {
           this_.clearInteractions();
-        } else if (k === 8) {
+        } else if (k === 8 || k === 46) {
           this_.deleteFeature();
         }
       };
@@ -267,19 +278,20 @@ export default {
       this.selectInteraction = interactions.Select;
       this.map.addInteraction(this.drawInteraction);
 
-      // 创建修改互动对象并加入到地图中
-      this.modifyInteraction = OlUtil.mapUtil.createModifyInteraction(
-        this.selectInteraction.getFeatures(),
-        Object.assign({}, option),
-        this.onFeatureModifyEnd.bind(this)
-      );
-      this.map.addInteraction(this.modifyInteraction);
+      // // 创建修改互动对象并加入到地图中
+      // this.modifyInteraction = OlUtil.mapUtil.createModifyInteraction(
+      //   this.selectInteraction.getFeatures(),
+      //   Object.assign({}, option),
+      //   this.onFeatureModifyEnd.bind(this)
+      // );
+      // this.map.addInteraction(this.modifyInteraction);
     },
     /**
      * 移除互动中的最后一个打点
      */
     removeLastPoint(event) {
-      if (this.interaction.interactionType === 'Draw' && this.drawInteraction) {
+      if ((this.interaction.interactionType === 'Draw' || this.interaction.interactionType === 'DrawSelect')
+        && this.drawInteraction) {
         this.drawInteraction.removeLastPoint();
       } else if(this.interaction.interactionType === 'Modify' && this.modifyInteraction) {
         this.modifyInteraction.removePoint();
@@ -298,17 +310,44 @@ export default {
         let name = feature.attributes.type;
         let target = this.getFeatureGroupLayerByName(name)[0];
         // 只删除显示图层的标注
-        if(target.getVisible()) {
+        if(target && target.getVisible()) {
           target.getSource().removeFeature(feature);
           this.$emit("FeatureDeleted", {
             feature
           });
-          // 移除对应的选中缓存
-          let index = this.selectFeatures.findIndex((f) => {
-            return f === feature;
-          });
-          this.selectFeatures.splice(index, 1);
         }
+      });
+      // 移除对应的选中缓存
+      this.selectInteraction.getFeatures().clear();
+      this.selectFeatures.splice(0, this.selectFeatures.length);
+    },
+    /**
+     * 删除指定图层的、符合自定义规则的标注
+     */
+    deleteFeatureByLayerFilter(layerName, filter) {
+      let target = this.getFeatureGroupLayerByName(layerName)[0];
+      let features = target.getSource().getFeatures().filter(filter);
+      // 删除指定图层中的指定标注
+      features.map(feature => {
+        target.getSource().removeFeature(feature);
+        this.$emit("FeatureDeleted", {
+          feature
+        });
+      });
+    },
+    /**
+     * 删除标注图层组中、符合自定义规则的标注
+     */
+    deleteFeatureByFilter(filter) {
+      let layers = this.featureLayerGroup.getLayers().getArray();
+      layers.map(layer => {
+        let features = layer.getSource().getFeatures().filter(filter);
+        features.map(feature => {
+          layer.getSource().removeFeature(feature);
+          this.$emit("FeatureDeleted", {
+            feature
+          });
+        });
       });
     },
     /**
@@ -321,6 +360,40 @@ export default {
       });
     },
     /**
+     * 添加覆盖物
+     */
+    addOverlay(data) {
+      let overlay = OlUtil.mapUtil.addOverlay(data.element, data.wkt, data.offset);
+      // 添加属性
+      overlay.attributes = Object.assign(overlay.attributes || {}, data);
+      this.map.addOverlay(overlay);
+    },
+    /**
+     * 获取指定覆盖物
+     */
+    getOverlay(id) {
+      let overlays = this.map.getOverlays().getArray();
+      return overlays.filter(o => {
+        return o.attributes.id === id;
+      });
+    },
+    /**
+     * 移除指定覆盖物
+     */
+    deleteOverlay(id) {
+      let overlays = this.map.getOverlays().getArray();
+      let overlay = overlays.filter(o => {
+        return o.attributes.id === id;
+      });
+      this.map.removeOverlay(overlay);
+    },
+    /**
+     * 清空覆盖物
+     */
+    clearOverlays() {
+      this.map.getOverlays().clear();
+    },
+    /**
      * 获取所有标注图层的标注属性数据
      */
     getAllFeaturesAttributes() {
@@ -331,6 +404,38 @@ export default {
         features.map(f => {
           if (f && f.attributes) resultSet.push(f.attributes);
         });
+      });
+      return resultSet;
+    },
+    /**
+     * 获取（除被排除外）所有标注图层的标注属性数据
+     */
+    getAllFeaturesAttributesExclude(excludeLayerNames_) {
+      let resultSet = [];
+      let layers = this.featureLayerGroup.getLayers().getArray();
+      // 排除指定图层
+      layers = layers.filter(layer => {
+        let name = layer.attributes.name.split('-')[0];
+        return excludeLayerNames_.indexOf(name) <0;
+      });
+      // 收集余下图层的标注
+      layers.map(layer => {
+        let features = layer.getSource().getFeatures();
+        features.map(f => {
+          if (f && f.attributes) resultSet.push(f.attributes);
+        });
+      });
+      return resultSet;
+    },
+    /**
+     * 获取指定标注图层的标注属性数据
+     */
+    getLayerFeaturesAttributes(layerName_) {
+      let resultSet = [];
+      let target = this.getFeatureGroupLayerByName(layerName_)[0];
+      let features = target.getSource().getFeatures();
+      features.map(f => {
+        if (f && f.attributes) resultSet.push(f.attributes);
       });
       return resultSet;
     },

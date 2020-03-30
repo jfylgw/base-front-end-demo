@@ -5,10 +5,17 @@
 * @since 2019年6月24日 14:46:38
 */
 
-$color-theme: #46b794;
-$color-theme-alpha: rgba(70, 183, 148, .8);
-$color-theme-hover: #35a683;
-$color-theme-active: #138461;
+$color-theme: #1E90FF;
+$color-theme-alpha: rgba(30, 144, 255, .8);
+$color-theme-hover: #0C70DD;
+$color-theme-active: #0A50BB;
+$color-theme-alpha-hover: rgba(30, 144, 255, .1);
+$color-theme-alpha-active: rgba(30, 144, 255, .3);
+
+$color-success: #67C23A;
+$color-success-alpha: rgba(103, 194, 58, .8);
+$color-success-hover: #56B129;
+$color-success-active: #45A007;
 
 $color-white: #ffffff;
 $color-white-alpha: rgba(255, 255, 255, .8);
