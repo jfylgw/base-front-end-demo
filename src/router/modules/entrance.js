@@ -8,25 +8,25 @@
 export default [
   /********************* 登录 ***************************/
   {
-    path: "/sign-in",
-    name: "sign-in",
-    component: () => import("@/views/sign/SignIn.vue")
+    path: "/signIn",
+    name: "signIn",
+    component: () => import("@/views/entrance/SignIn.vue")
   },
   {
-    path: "/sign-out",
-    name: "sign-out",
-    component: () => import("@/views/sign/SignOut.vue")
+    path: "/signOut",
+    name: "signOut",
+    component: () => import("@/views/entrance/SignOut.vue")
   },
   {
-    path: "/sign-up",
-    name: "sign-up",
-    component: () => import("@/views/sign/SignUp.vue")
+    path: "/signUp",
+    name: "signUp",
+    component: () => import("@/views/entrance/SignUp.vue")
   },
   /********************* 入口 ***************************/
   {
     path: "/home",
     name: "home",
     props: true,
-    component: () => import("@/views/Home.vue")
+    component: () => import("@/views/entrance/Home.vue")
   }
 ];

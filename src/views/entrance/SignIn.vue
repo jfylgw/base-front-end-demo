@@ -74,7 +74,8 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import Loading from "components/base/Loading";
-import Status from "api/base/status";
+
+import Status from "assets/js/base/status";
 import * as AuthorityApi from "api/authority";
 
 export default {
@@ -167,7 +168,8 @@ export default {
 
 <style scoped lang="scss">
 .signin-context {
-    background: url(~@/assets/image/background/map.png) no-repeat;
+    // background: url(~@/assets/image/background/map.png) no-repeat;
+    background: url(/img/background/map.png) no-repeat;
     -moz-background-size: 100% 100%;  
     background-size: 100% 100%;
 

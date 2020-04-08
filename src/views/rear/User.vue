@@ -70,7 +70,8 @@
 
 <script>
 import Loading from "components/base/Loading";
-import Status from "api/base/status";
+
+import Status from "assets/js/base/status";
 import * as UserApi from "api/user";
 
 export default {

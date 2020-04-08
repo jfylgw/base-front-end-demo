@@ -6,8 +6,8 @@
  */
 
 import request from "assets/js/base/request";
-import Status from "api/base/status";
-import {getProxyPrefix} from 'api/base/url';
+import Status from "assets/js/base/status";
+import {getProxyPrefix} from 'assets/js/base/url';
 
 // 模块前缀
 const modulePrefix = `${getProxyPrefix()}/user`;
@@ -25,7 +25,7 @@ const countUrl = `${modulePrefix}/count`;
  * 保存用户信息
  */
 export async function save(data) {
-    if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!data) return Status.httpStatus.PreconditionFailed;
     return await request.post(saveUrl, data);
 }
 
@@ -33,7 +33,7 @@ export async function save(data) {
  * 根据ID删除用户信息
  */
 export async function remove(id) {
-    if (!id) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!id) return Status.httpStatus.PreconditionFailed;
     return await request.delete(`${removeUrl}${id}`);
 }
 
@@ -41,7 +41,7 @@ export async function remove(id) {
  * 根据ID获取用户信息
  */
 export async function detail(id) {
-    if (!id) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!id) return Status.httpStatus.PreconditionFailed;
     return await request.get(`${detailUrl}${id}`);
 }
 
@@ -49,7 +49,7 @@ export async function detail(id) {
  * 获取用户信息
  */
 export async function findOne(data) {
-    if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!data) return Status.httpStatus.PreconditionFailed;
     return await request.put(findOneUrl, data);
 }
 
@@ -57,7 +57,7 @@ export async function findOne(data) {
  * 获取用户信息（带排序参数）
  */
 export async function findOneWithSort(data) {
-    if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!data) return Status.httpStatus.PreconditionFailed;
     return await request.put(findOneWithSortUrl, data);
 }
 
@@ -65,7 +65,7 @@ export async function findOneWithSort(data) {
  * 获取用户列表
  */
 export async function list(data) {
-    if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!data) return Status.httpStatus.PreconditionFailed;
     return await request.put(listUrl, data);
 }
 
@@ -73,7 +73,7 @@ export async function list(data) {
  * 获取用户分页列表
  */
 export async function page(data) {
-    if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!data) return Status.httpStatus.PreconditionFailed;
     return await request.put(pageUrl, data);
 }
 
@@ -81,6 +81,6 @@ export async function page(data) {
  * 获取用户计数
  */
 export async function count(data) {
-    if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+    if (!data) return Status.httpStatus.PreconditionFailed;
     return await request.put(countUrl, data);
 }

@@ -10,6 +10,7 @@ export default {
     data() {
         return {
             show: {
+                isLoading: false,
                 add: false,
                 edit: false,
                 detail: false,
@@ -22,6 +23,12 @@ export default {
         };
     },
     methods: {
+        showLoading() {
+            this.show.isLoading = true;
+        },
+        hideLoading() {
+            this.show.isLoading = false;
+        },
         // 校验（名称在表单的ref属性上配置）
         validate(formRefName) {
             let ok = true;

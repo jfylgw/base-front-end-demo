@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueCookies from "vue-cookies";
 import ElementUI from "element-ui";
-import VueParticles from 'vue-particles';
+import VueParticles from "vue-particles";
 
 import store from "store/index";
 import router from "router/index";
@@ -11,6 +11,7 @@ import App from "@/App.vue";
 
 // 引入ElementUI默认主题
 import "element-ui/lib/theme-chalk/index.css";
+import "assets/scss/index.scss";
 
 // 引入Cookie控制
 VueCookies.config("7d"); // 设置默认保存时间为7天

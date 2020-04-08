@@ -6,8 +6,8 @@
  */
 
 import request from "assets/js/base/request";
-import Status from "api/base/status";
-import {getProxyPrefix} from 'api/base/url';
+import Status from "assets/js/base/status";
+import {getProxyPrefix} from 'assets/js/base/url';
 
 // 模块前缀
 const modulePrefix = `${getProxyPrefix()}/entry`;
@@ -21,7 +21,7 @@ const modifyPassUrl = `${modulePrefix}/modifyPass`;
  * 登入
  */
 export async function signIn(data) {
-  if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+  if (!data) return Status.httpStatus.PreconditionFailed;
   return await request.put(signInUrl, data);
 }
 
@@ -36,7 +36,7 @@ export async function signOut() {
  * 注册
  */
 export async function signUp(data) {
-  if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+  if (!data) return Status.httpStatus.PreconditionFailed;
   return await request.post(signUpUrl, data);
 }
 
@@ -44,6 +44,6 @@ export async function signUp(data) {
  * 修改密码
  */
 export async function modifyPass(data) {
-  if (!data) return Status.HTTP_STATUS.CONDITION_INVALID;
+  if (!data) return Status.httpStatus.PreconditionFailed;
   return await request.post(modifyPassUrl, data);
 }
