@@ -103,7 +103,7 @@ module.exports = {
       // 这里的选项会传递给 sass-loader
       sass: {
         // 引入全局变量
-        data: `@import "@/assets/scss/variable.scss";$src: "${process.env.VUE_APP_SRC}";`
+        data: `@import "@/assets/scss/index.scss";$src: "${process.env.VUE_APP_SRC}";`
       }
     }
   }
