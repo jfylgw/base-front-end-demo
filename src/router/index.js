@@ -35,7 +35,7 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      redirect: "/sign-in"
+      redirect: "/signIn"
       // redirect: "/home"
       // redirect: "/rear/user",
       // redirect: "/front/map",

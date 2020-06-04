@@ -63,6 +63,7 @@ input {
   background-color: $color-white;
   cursor: pointer;
   text-decoration: none;
+  transition: all 0.3s;
   &:hover {
     background-color: $color-white-hover;
   }
@@ -167,6 +168,22 @@ input {
     border: 0;
     border-left: 2px solid #dddddd;
     margin: 0 6px;
+  }
+}
+
+.tab {
+  padding: 15px 10px;
+  text-align: right;
+  transition: all 0.3s;
+  &:hover {
+      background-color: $color-theme-alpha-hover;
+  }
+  &:active {
+      background-color: $color-theme-alpha-active;
+  }
+
+  span {
+      width: 100%;
   }
 }
 

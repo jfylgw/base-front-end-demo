@@ -13,7 +13,7 @@ const common = {
   state: {
     platformName: '演示平台', // 平台名称
     copyright: 'Copyright © 2019 XAG Co.,Ltd. All Rights Reserved', // 版权说明
-    signInRoute: "sign-in", // 登录页路由
+    signInRoute: "signIn", // 登录页路由
     theme: Storage.getSessionStore("theme") || "", // 主题名称
     showSignInDialog: true, // 是否展示全局登录弹窗
     screenLock: false, // 是否锁屏

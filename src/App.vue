@@ -45,7 +45,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Loading from "components/base/Loading";
-import Status from "api/status";
+import Status from "assets/js/base/status";
 import * as AuthorityApi from "api/authority";
 
 export default {

@@ -1,11 +1,11 @@
 const isDebug = process.env.NODE_ENV !== 'production';
 const proxyUrls = {
-  backend: "http://localhost:8192"
+  backend: "http://localhost:8888"
 };
 
 module.exports = {
   // 部署生产环境和开发环境下的URL
-  baseUrl: !isDebug ? "./" : "/",
+  publicPath: !isDebug ? "./" : "/",
   // 文件输出路径
   outputDir: "dist",
   // 是否使用eslint

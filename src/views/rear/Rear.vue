@@ -117,8 +117,11 @@ export default {
         ...mapActions(['ROUTER_TO_SIGNIN', 'CHANGE_ROUTE_ACCESS_BTNS']),
         init() {
             // 自动点击指定默认路由菜单项
-            let target = this.$refs[this.initRouteName][0].$el;
-            activeClick(target);
+            let target = this.$refs[this.initRouteName];
+            if(target instanceof Array) {
+                target = target[0];
+            }
+            activeClick(target.$el);
         },
         // 选中菜单项
         clickMenuItem(item) {

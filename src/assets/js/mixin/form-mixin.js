@@ -15,9 +15,10 @@ export default {
                 edit: false,
                 detail: false,
             },
-            dialog: {
+            form: {
                 title: '',
-                form: {}
+                params: {},
+                rules: {}
             },
             entity: {}
         };
