@@ -153,6 +153,60 @@ export function deepClone(data) {
   return obj;
 }
 
+/**
+ * 函数柯里化：将使用多个参数的一个函数转换成一系列使用一个参数的函数
+ */
+export function curry(fn, args = [], holes = []) {
+  let length = fn.length;
+
+  return function() {
+    let _args = args.slice(0),
+      _holes = holes.slice(0),
+      argsLen = args.length,
+      holesLen = holes.length,
+      arg, i, index = 0;
+
+    for (i = 0; i < arguments.length; i++) {
+      arg = arguments[i];
+      // 处理类似 fn(1, _, _, 4)(_, 3) 这种情况，index 需要指向 holes 正确的下标
+      if (arg === _ && holesLen) {
+        index++
+        if (index > holesLen) {
+          _args.push(arg);
+          _holes.push(argsLen - 1 + index - holesLen)
+        }
+      }
+      // 处理类似 fn(1)(_) 这种情况
+      else if (arg === _) {
+        _args.push(arg);
+        _holes.push(argsLen + i);
+      }
+      // 处理类似 fn(_, 2)(1) 这种情况
+      else if (holesLen) {
+        // fn(_, 2)(_, 3)
+        if (index >= holesLen) {
+          _args.push(arg);
+        }
+        // fn(_, 2)(1) 用参数 1 替换占位符
+        else {
+          _args.splice(_holes[index], 1, arg);
+          _holes.splice(index, 1)
+        }
+      }
+      else {
+        _args.push(arg);
+      }
+    }
+
+    if (_holes.length || _args.length < length) {
+      return curry.call(this, fn, _args, _holes);
+    }
+    else {
+      return fn.apply(this, _args);
+    }
+  }
+}
+
 /***************************** 字符串 ******************************************/
 
 /**
@@ -182,11 +236,98 @@ export function stringRTrim(str) {
  * 主动点击指定元素对象
  */
 export function activeClick(elementObj) {
-  var ev = document.createEvent("MouseEvents");
+  let ev = document.createEvent("MouseEvents");
   ev.initMouseEvent(
       "click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
   );
   elementObj.dispatchEvent(ev);
+}
+
+/**
+ * 防抖：频繁触发的情况下，只有停止触发后等待一定时间，才执行代码一次
+ * func：目标函数
+ * wait：动作后的等待时间
+ * immediate：是否立即执行
+ */
+export function debounce(func, wait, immediate) {
+  let timeout, result;
+
+  let debounced = function () {
+    // 将this指向正确的对象
+    let context = this;
+    // 将原事件对象传入
+    let args = arguments;
+
+    if (timeout) clearTimeout(timeout);
+    if (immediate) {
+      // 如果已经执行过，不再执行
+      let callNow = !timeout;
+      timeout = setTimeout(function(){
+        timeout = null;
+      }, wait)
+      if (callNow) result = func.apply(context, args)
+    }
+    else {
+      timeout = setTimeout(function(){
+        func.apply(context, args)
+      }, wait);
+    }
+    return result;
+  };
+
+  debounced.cancel = function() {
+    clearTimeout(timeout);
+    timeout = null;
+  };
+
+  return debounced;
+}
+
+/**
+ * 节流：如果持续触发事件，一定时间内只执行代码一次
+ * func：目标函数
+ * wait：时间间隔
+ * options：leading：false 表示禁用第一次执行
+            trailing: false 表示禁用停止触发的回调
+ */
+export function throttle(func, wait, options) {
+  let timeout, context, args, result;
+  let previous = 0;
+  if (!options) options = {};
+
+  let later = function() {
+    previous = options.leading === false ? 0 : new Date().getTime();
+    timeout = null;
+    func.apply(context, args);
+    if (!timeout) context = args = null;
+  };
+
+  let throttled = function() {
+    let now = new Date().getTime();
+    if (!previous && options.leading === false) previous = now;
+    let remaining = wait - (now - previous);
+    context = this;
+    args = arguments;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      func.apply(context, args);
+      if (!timeout) context = args = null;
+    } else if (!timeout && options.trailing !== false) {
+      timeout = setTimeout(later, remaining);
+    }
+  };
+
+  throttled.cancel = function() {
+    clearTimeout(timeout);
+    previous = 0;
+    timeout = null;
+  };
+
+  return throttled;
 }
 
 /***************************** 文件操作 ******************************************/
