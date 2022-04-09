@@ -19,7 +19,7 @@
     "element-ui": "^2.11.1",
     "express": "^4.17.1",
     "jsonp": "^0.2.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "ol": "^6.2.1",
     "vue": "^2.6.10",
     "vue-cli-plugin-element": "^1.0.1",
